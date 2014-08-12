@@ -23,13 +23,28 @@ namespace ToastStream.Views
      */
 
     /// <summary>
-    /// MainWindow.xaml の相互作用ロジック
+    /// TweetWindow.xaml の相互作用ロジック
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class TweetWindow : Window
     {
-        public MainWindow()
+        bool ExitState { get; set; }
+
+        public TweetWindow()
         {
             InitializeComponent();
+            ExitState = false;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            this.Hide();
+            e.Cancel = !ExitState;
+        }
+
+        public void Exit()
+        {
+            ExitState = true;
+            this.Close();
         }
     }
 }

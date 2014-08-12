@@ -15,7 +15,7 @@ using ToastStream.Models;
 
 namespace ToastStream.ViewModels
 {
-    public class MainWindowViewModel : ViewModel
+    public class TweetWindowViewModel : ViewModel
     {
         /* コマンド、プロパティの定義にはそれぞれ 
          * 
