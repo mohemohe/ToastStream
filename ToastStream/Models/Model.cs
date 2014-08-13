@@ -39,11 +39,11 @@ namespace ToastStream.Models
 
             try
             {
-                lorelei.ConnectUserStream(true);
+                lorelei.ConnectUserStream(Settings.ReceiveAllReplies);
             }
             catch (DeadOrDisconnectedUserStreamException)
             {
-                lorelei.ConnectUserStream(true);
+                lorelei.ConnectUserStream(Settings.ReceiveAllReplies);
             }
             while (true)
             {
@@ -74,7 +74,7 @@ namespace ToastStream.Models
                 }
                 catch (DeadOrDisconnectedUserStreamException)
                 {
-                    lorelei.ConnectUserStream(true);
+                    lorelei.ConnectUserStream(Settings.ReceiveAllReplies);
                 }
                 catch { }
 
