@@ -45,6 +45,11 @@ namespace ToastStream.Helpers
             notifyIcon.ContextMenuStrip = cms;
 
             tw = new TweetWindow();
+            tw.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+
+            var desktop = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea;
+            tw.Top = desktop.Height - tw.Height;
+            tw.Left = desktop.Width - tw.Width;
 
             if (Settings.AccessToken == null)
             {
@@ -62,6 +67,7 @@ namespace ToastStream.Helpers
         private static void MainWindowOpen()
         {
             tw.Show();
+            tw.Activate();
         }
 
         public static void MainWindowClose()

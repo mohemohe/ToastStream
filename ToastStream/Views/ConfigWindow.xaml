@@ -97,6 +97,10 @@
                         </Label>
                         <Label Content="," HorizontalAlignment="Left" Margin="358,185,0,0" VerticalAlignment="Top" Padding="0,5,5,5"/>
                         <Label Margin="367,185,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="0,5">
+                            <Hyperlink NavigateUri="http://modernuiicons.com/" RequestNavigate="Hyperlink_Navigate">Modern UI Icons</Hyperlink>
+                        </Label>
+                        <Label Content="," HorizontalAlignment="Left" Margin="464,185,0,0" VerticalAlignment="Top" Padding="0,5,5,5"/>
+                        <Label Margin="80,210,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="0,5">
                             <Hyperlink NavigateUri="https://github.com/mohemohe/Rhinemaidens.Lorelei" RequestNavigate="Hyperlink_Navigate">Lorelei</Hyperlink>
                         </Label>
 

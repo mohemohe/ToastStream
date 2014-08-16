@@ -15,7 +15,6 @@ namespace ToastStream.Models
          * NotificationObjectはプロパティ変更通知の仕組みを実装したオブジェクトです。
          */
         private Lorelei lorelei;
-        private int TmpImgNum = 0;
 
         public Model()
         {
@@ -29,8 +28,11 @@ namespace ToastStream.Models
             Toast.silent = true;
             Toast.ICON_LOCATION = System.Environment.CurrentDirectory + "\\ToastStream.ico";
             Toast.TryCreateShortcut();
-
-            lorelei = new Lorelei(Settings.ConsumerKey, Settings.ConsumerSecret, Settings.AccessToken, Settings.AccessTokenSecret);
+            
+            if (Settings.AccessToken != null)
+            {
+                lorelei = new Lorelei(Settings.ConsumerKey, Settings.ConsumerSecret, Settings.AccessToken, Settings.AccessTokenSecret);
+            }
         }
 
         private void ToastStream()
@@ -39,17 +41,17 @@ namespace ToastStream.Models
 
             try
             {
-                lorelei.ConnectUserStream(true);
+                lorelei.ConnectUserStream(Settings.ReceiveAllReplies);
             }
             catch (DeadOrDisconnectedUserStreamException)
             {
-                lorelei.ConnectUserStream(true);
+                lorelei.ConnectUserStream(Settings.ReceiveAllReplies);
             }
             while (true)
             {
                 try
                 {
-                    ti = lorelei.TweetInfoQueue.Dequeue();
+                    ti = lorelei.tweetInfoQueue.Dequeue();
 
                     System.Drawing.Bitmap img1, img2, outImg;
                     var tmpImg = "~tmpIcon";
@@ -74,27 +76,12 @@ namespace ToastStream.Models
                 }
                 catch (DeadOrDisconnectedUserStreamException)
                 {
-                    lorelei.ConnectUserStream(true);
+                    lorelei.ConnectUserStream(Settings.ReceiveAllReplies);
                 }
                 catch { }
 
                 System.Threading.Thread.Sleep(2);
             }
-        }
-
-        private string GetTmpImageName(string FileName)
-        {
-            string tmpFileName;
-            
-            TmpImgNum++;
-            tmpFileName = FileName + (TmpImgNum % 10).ToString();
-
-            if(TmpImgNum % 10 == 0)
-            {
-                TmpImgNum = 0;
-            }
-
-            return tmpFileName;
         }
     }
 }

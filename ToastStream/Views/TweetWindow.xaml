@@ -6,18 +6,22 @@
         xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
         xmlns:v="clr-namespace:ToastStream.Views"
         xmlns:vm="clr-namespace:ToastStream.ViewModels"
-        Title="TweetWindow" Height="350" Width="525" Closing="Window_Closing">
-    
+        Title="ツイート" Height="185" Width="555" Closing="Window_Closing" Icon="Resource/icon256.png" ResizeMode="NoResize">
+
     <Window.DataContext>
         <vm:TweetWindowViewModel/>
     </Window.DataContext>
-    
-     <i:Interaction.Triggers>
-     
-     	<!--Viewに特別な要件が存在しない限りは、トリガーやアクションの自作にこだわらず積極的にコードビハインドを使いましょう -->
-    	<!--Viewのコードビハインドは、基本的にView内で完結するロジックとViewModelからのイベントの受信(専用リスナを使用する)に限るとトラブルが少なくなります -->
-    	<!--Livet1.1からはコードビハインドでViewModelのイベントを受信するためのWeakEventLisnterサポートが追加されています --> 
-        
+
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Control" Key="Enter" Command="{Binding PostTweetCommand}" />
+    </Window.InputBindings>
+
+    <i:Interaction.Triggers>
+
+        <!--Viewに特別な要件が存在しない限りは、トリガーやアクションの自作にこだわらず積極的にコードビハインドを使いましょう -->
+        <!--Viewのコードビハインドは、基本的にView内で完結するロジックとViewModelからのイベントの受信(専用リスナを使用する)に限るとトラブルが少なくなります -->
+        <!--Livet1.1からはコードビハインドでViewModelのイベントを受信するためのWeakEventLisnterサポートが追加されています -->
+
         <!--WindowのContentRenderedイベントのタイミングでViewModelのInitializeメソッドが呼ばれます-->
         <i:EventTrigger EventName="ContentRendered">
             <l:LivetCallMethodAction MethodTarget="{Binding}" MethodName="Initialize"/>
@@ -31,8 +35,24 @@
         <!--WindowのCloseキャンセル処理に対応する場合は、WindowCloseCancelBehaviorの使用を検討してください-->
 
     </i:Interaction.Triggers>
-    
+
     <Grid>
-        
+        <Image Margin="437,10,10,44" Source="{Binding TweetImagePreview}"/>
+        <TextBox Text="{Binding TweetBody, UpdateSourceTrigger=PropertyChanged}" Margin="10,10,10,44" AcceptsReturn="True" TextWrapping="Wrap" FontFamily="Meiryo" Background="#CCFFFFFF" />
+        <Label Content="{Binding TweetLength}" HorizontalAlignment="Right" Margin="0,0,90,10" Height="25" VerticalAlignment="Bottom"/>
+        <Button Content="ツイート" Command="{Binding PostTweetCommand}"  Margin="0,0,10,13" HorizontalAlignment="Right" Width="75" Height="19" VerticalAlignment="Bottom"/>
+
+        <Button HorizontalAlignment="Left" Margin="10,0,0,13" Width="31" Height="19" VerticalAlignment="Bottom" Background="{x:Null}">
+        	<i:Interaction.Triggers>
+        		<i:EventTrigger EventName="Click">
+        			<l:OpenFileDialogInteractionMessageAction>
+                        <l:DirectInteractionMessage CallbackCommand="{Binding OpenImageCommand}">
+        					<l:OpeningFileSelectionMessage Filter="すべてのファイル(*.*)|*.*" Title="ツイートする画像の選択"/>
+        				</l:DirectInteractionMessage>
+        			</l:OpenFileDialogInteractionMessageAction>
+        		</i:EventTrigger>
+        	</i:Interaction.Triggers>
+            <Image Source="Resource/appbar.image.png" Height="32" Width="32" Margin="-2,-8,0,0"/>
+        </Button>
     </Grid>
 </Window>

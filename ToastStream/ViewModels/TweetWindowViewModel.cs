@@ -12,6 +12,11 @@ using Livet.EventListeners;
 using Livet.Messaging.Windows;
 
 using ToastStream.Models;
+using Rhinemaidens;
+using ToastStream.Helpers;
+using System.Drawing;
+using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace ToastStream.ViewModels
 {
@@ -59,8 +64,189 @@ namespace ToastStream.ViewModels
          * 自動的にUIDispatcher上での通知に変換されます。変更通知に際してUIDispatcherを操作する必要はありません。
          */
 
+        Lorelei lorelei;
+
+        #region TweetBody変更通知プロパティ
+        private string _TweetBody;
+
+        public string TweetBody
+        {
+            get
+            { return _TweetBody; }
+            set
+            { 
+                if (_TweetBody == value)
+                    return;
+                _TweetBody = value;
+                TweetLength = 140 - _TweetBody.Length;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region TweetImageFilePath変更通知プロパティ
+        private string _TweetImageFilePath;
+
+        public string TweetImageFilePath
+        {
+            get
+            { return _TweetImageFilePath; }
+            set
+            { 
+                if (_TweetImageFilePath == value)
+                    return;
+                _TweetImageFilePath = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region TweetImagePreview変更通知プロパティ
+        private BitmapFrame _TweetImagePreview;
+
+        public BitmapFrame TweetImagePreview
+        {
+            get
+            { return _TweetImagePreview; }
+            set
+            { 
+                if (_TweetImagePreview == value)
+                    return;
+                _TweetImagePreview = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region TweetLength変更通知プロパティ
+        private int _TweetLength;
+
+        public int TweetLength
+        {
+            get
+            { return _TweetLength; }
+            set
+            { 
+                if (_TweetLength == value)
+                    return;
+                _TweetLength = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
         public void Initialize()
         {
+            lorelei = new Lorelei(Settings.ConsumerKey, Settings.ConsumerSecret, Settings.AccessToken, Settings.AccessTokenSecret);
+            TweetLength = 140;
         }
+
+        #region OpenImageCommand
+        private ListenerCommand<OpeningFileSelectionMessage> _OpenImageCommand;
+
+        public ListenerCommand<OpeningFileSelectionMessage> OpenImageCommand
+        {
+            get
+            {
+                if (_OpenImageCommand == null)
+                {
+                    _OpenImageCommand = new ListenerCommand<OpeningFileSelectionMessage>(OpenImage);
+                }
+                return _OpenImageCommand;
+            }
+        }
+
+        public void OpenImage(OpeningFileSelectionMessage parameter)
+        {
+            try
+            {
+                // キャンセルするとエラーで死ぬ
+                if (String.IsNullOrEmpty(parameter.Response[0]) == false)
+                {
+                    TweetImageFilePath = parameter.Response[0];
+
+                    var ms = new MemoryStream(File.ReadAllBytes(TweetImageFilePath));
+                    TweetImagePreview = BitmapFrame.Create(ms);
+                }
+            }
+            catch { } // 仕方ない
+        }
+        #endregion
+
+        #region PostTweetCommand
+        private ViewModelCommand _PostTweetCommand;
+
+        public ViewModelCommand PostTweetCommand
+        {
+            get
+            {
+                if (_PostTweetCommand == null)
+                {
+                    _PostTweetCommand = new ViewModelCommand(PostTweet);
+                }
+                return _PostTweetCommand;
+            }
+        }
+
+        public void PostTweet()
+        {
+            try
+            {
+                if (TweetImagePreview != null)
+                {
+                    PostTweetWithImage();
+                }
+                else
+                {
+                    if (String.IsNullOrEmpty(TweetBody) == false)
+                    {
+                        PostTweetBodyOnly();
+                    }
+                }
+
+                TweetBody = "";
+                TweetImageFilePath = null;
+                TweetImagePreview = null;
+            }
+            catch (TooLongTweetBodyException)
+            {
+                var mbp = new MessageBoxPack("ツイート本文は140文字までです。", "ツイート エラー");
+                MessageBoxHelper.AddMessageBoxQueue(mbp);
+            }
+            catch (DuplicateTweetBodyException)
+            {
+                var mbp = new MessageBoxPack("前回のツイートと同じ文章のようです。", "ツイート エラー");
+                MessageBoxHelper.AddMessageBoxQueue(mbp);
+            }
+            catch (TwitterServerNotWorkingWellException)
+            {
+                var mbp = new MessageBoxPack("Twitterから不明なエラーが返ってきました。", "ツイート エラー");
+                MessageBoxHelper.AddMessageBoxQueue(mbp);
+            }
+        }
+
+        private void PostTweetBodyOnly()
+        {
+            try
+            {
+                lorelei.PostTweet(TweetBody);
+            }
+            catch { throw; }
+        }
+
+        private void PostTweetWithImage()
+        {
+            try
+            {
+                if (String.IsNullOrEmpty(TweetBody) == true)
+                {
+                    TweetBody = "";
+                }
+                lorelei.PostTweetWithImage(TweetBody, TweetImageFilePath);
+            }
+            catch { throw; }
+        }
+        #endregion
+
     }
 }

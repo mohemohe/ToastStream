@@ -206,6 +206,7 @@ namespace ToastStream.ViewModels
         private string DefaultConsumerSecret { get { return "J01XKPWjIvRUfSUeGhWXEk9q1Mo3ZHNkJRVo2C6TXFfQQVfOiy"; } }
         private string AccessToken { get; set; }
         private string AccessTokenSecret { get; set; }
+
         Lorelei lorelei;
 
         public void Initialize()
