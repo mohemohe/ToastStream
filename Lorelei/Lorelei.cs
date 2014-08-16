@@ -12,6 +12,7 @@ using System.Web;
 using System.Web.Script.Serialization;
 
 using OAuth;
+using System.Web.Security;
 
 namespace Rhinemaidens
 {
@@ -22,6 +23,9 @@ namespace Rhinemaidens
         private readonly string accessTokenUrl = "https://api.twitter.com/oauth/access_token";
         private readonly string userStreamUrl = "https://userstream.twitter.com/1.1/user.json";
 
+        private readonly string postTweetUrl = "https://api.twitter.com/1.1/statuses/update.json";
+        private readonly string postTweetWithImageUrl = "https://api.twitter.com/1.1/statuses/update_with_media.json";
+
         public string consumerKey { get; private set; }
         public string consumerSecret { get; private set; }
         public string accessToken { get; private set; }
@@ -30,9 +34,9 @@ namespace Rhinemaidens
         private string requestToken { get; set; }
         private string requestTokenSecret { get; set; }
 
-        private bool IsStartedUserStream { get; set; }
+        private bool isStartedUserStream { get; set; }
 
-        public Queue<TweetInfo> TweetInfoQueue = new Queue<TweetInfo>();
+        public Queue<TweetInfo> tweetInfoQueue = new Queue<TweetInfo>();
 
         /// <summary>
         /// ツイートに関する情報を格納します
@@ -64,6 +68,7 @@ namespace Rhinemaidens
         {
             public string id { get; set; }
             public string screenName { get; set; }
+            //TODO: 
         }
 
         public enum ImageSize
@@ -116,19 +121,19 @@ namespace Rhinemaidens
         /// <returns>ヘッダ文字列</returns>
         public string BuildHeaderString(string EncodedUrl, string Method, string ExtString1, string ExtString2)
         {
-            OAuthBase oauth = new OAuthBase();
-            string timeStamp = oauth.GenerateTimeStamp();
-            string nonce = oauth.GenerateNonce();
+            var oauth = new OAuthBase();
+            var timeStamp = oauth.GenerateTimeStamp();
+            var nonce = oauth.GenerateNonce();
 
-            string signatureBase = GenerateSignatureBase(EncodedUrl.Replace("%3a", "%3A").Replace("%2f", "%2F"), Method, timeStamp, nonce, ExtString1, ExtString2);
+            var signatureBase = GenerateSignatureBase(EncodedUrl.Replace("%3a", "%3A").Replace("%2f", "%2F"), Method, timeStamp, nonce, ExtString1, ExtString2);
 
-            string compositeKey = consumerSecret + "&" + accessTokenSecret;
+            var compositeKey = consumerSecret + "&" + accessTokenSecret;
 
-            string signature = oauth.GenerateSignatureUsingHash(signatureBase, new HMACSHA1(Encoding.UTF8.GetBytes(compositeKey)));
+            var signature = oauth.GenerateSignatureUsingHash(signatureBase, new HMACSHA1(Encoding.UTF8.GetBytes(compositeKey)));
 
             signature = HttpUtility.UrlEncode(signature);
 
-            string HeaderString = "OAuth oauth_consumer_key=\"" + consumerKey + "\", oauth_nonce=\"" + nonce + "\", oauth_signature=\""
+            var HeaderString = "OAuth oauth_consumer_key=\"" + consumerKey + "\", oauth_nonce=\"" + nonce + "\", oauth_signature=\""
                 + signature + "\", " + "oauth_signature_method=\"HMAC-SHA1\", oauth_timestamp=\"" + timeStamp + "\", oauth_token=\""
                 + accessToken + "\", " + "oauth_version=\"1.0\"";
 
@@ -137,11 +142,18 @@ namespace Rhinemaidens
 
         private string GenerateSignatureBase(string EncodedUrl, string Method, string TimeStamp, string Nonce, string ExtString1, string ExtString2)
         {
-            string signatureBase = "";
-            string AND = Uri.EscapeDataString("&").ToString();
-            string EQ = Uri.EscapeDataString("=").ToString();
+            var signatureBase = "";
+            var AND = Uri.EscapeDataString("&").ToString();
+            var EQ = Uri.EscapeDataString("=").ToString();
 
-            signatureBase += Method + "&" + EncodedUrl + "&";
+            if (String.IsNullOrEmpty(Method) == true) 
+            {
+                signatureBase += EncodedUrl + "&";
+            }
+            else
+            {
+                signatureBase += Method + "&" + EncodedUrl + "&";
+            }
 
             if (ExtString1 != "")
             {
@@ -162,24 +174,24 @@ namespace Rhinemaidens
 
         private bool GetRequestToken()
         {
-            OAuthBase oauth = new OAuthBase();
-            string timeStamp = oauth.GenerateTimeStamp();
-            string nonce = oauth.GenerateNonce();
-            string method = "GET";
+            var oauth = new OAuthBase();
+            var timeStamp = oauth.GenerateTimeStamp();
+            var nonce = oauth.GenerateNonce();
+            var method = "GET";
 
             string normalizedUrl, normalizedReqParams;
 
-            string signature = oauth.GenerateSignature(new Uri(requestTokenUrl), consumerKey, consumerSecret, null, null
+            var signature = oauth.GenerateSignature(new Uri(requestTokenUrl), consumerKey, consumerSecret, null, null
                 , method, timeStamp, nonce, OAuthBase.SignatureTypes.HMACSHA1, out normalizedUrl, out normalizedReqParams);
 
-            string tokenUrl = normalizedUrl + "?" + normalizedReqParams + "&oauth_signature=" + signature;
+            var tokenUrl = normalizedUrl + "?" + normalizedReqParams + "&oauth_signature=" + signature;
 
-            WebClient wc = new WebClient();
+            var wc = new WebClient();
             string res;
             try
             {
-                Stream st = wc.OpenRead(tokenUrl);
-                StreamReader sr = new StreamReader(st, Encoding.GetEncoding("UTF-8"));
+                var st = wc.OpenRead(tokenUrl);
+                var sr = new StreamReader(st, Encoding.GetEncoding("UTF-8"));
                 res = sr.ReadToEnd();
             }
             catch (WebException e)
@@ -199,8 +211,8 @@ namespace Rhinemaidens
                 throw new TwitterServerNotWorkingWellException();
             }
 
-            Regex re = new Regex("oauth_token=(?<token>.*)&oauth_token_secret=(?<tokenSecret>.*)&oauth_callback_confirmed");
-            Match m = re.Match(res);
+            var re = new Regex("oauth_token=(?<token>.*)&oauth_token_secret=(?<tokenSecret>.*)&oauth_callback_confirmed");
+            var m = re.Match(res);
 
             requestToken = m.Groups["token"].Value;
             requestTokenSecret = m.Groups["tokenSecret"].Value;
@@ -226,24 +238,24 @@ namespace Rhinemaidens
 
         private bool _GetAccessToken(string pin)
         {
-            OAuthBase oauth = new OAuthBase();
-            string timeStamp = oauth.GenerateTimeStamp();
-            string nonce = oauth.GenerateNonce();
-            string method = "GET";
+            var oauth = new OAuthBase();
+            var timeStamp = oauth.GenerateTimeStamp();
+            var nonce = oauth.GenerateNonce();
+            var method = "GET";
 
             string normalizedUrl, normalizedReqParams;
 
-            string signature = oauth.GenerateSignature(new Uri(requestTokenUrl), consumerKey, consumerSecret, requestToken, requestTokenSecret
+            var signature = oauth.GenerateSignature(new Uri(requestTokenUrl), consumerKey, consumerSecret, requestToken, requestTokenSecret
                 , method, timeStamp, nonce, OAuthBase.SignatureTypes.HMACSHA1, out normalizedUrl, out normalizedReqParams);
 
-            string tokenUrl = accessTokenUrl + "?" + normalizedReqParams + "&oauth_signature=" + signature + "&oauth_verifier=" + pin;
+            var tokenUrl = accessTokenUrl + "?" + normalizedReqParams + "&oauth_signature=" + signature + "&oauth_verifier=" + pin;
 
-            WebClient wc = new WebClient();
+            var wc = new WebClient();
             string res;
             try
             {
-                Stream st = wc.OpenRead(tokenUrl);
-                StreamReader sr = new StreamReader(st, Encoding.GetEncoding("UTF-8"));
+                var st = wc.OpenRead(tokenUrl);
+                var sr = new StreamReader(st, Encoding.GetEncoding("UTF-8"));
                 res = sr.ReadToEnd();
             }
             catch (WebException e)
@@ -263,8 +275,8 @@ namespace Rhinemaidens
                 throw new TwitterServerNotWorkingWellException();
             }
 
-            Regex re = new Regex("oauth_token=(?<token>.*)&oauth_token_secret=(?<tokenSecret>.*)&user_id");
-            Match m = re.Match(res);
+            var re = new Regex("oauth_token=(?<token>.*)&oauth_token_secret=(?<tokenSecret>.*)&user_id");
+            var m = re.Match(res);
 
             accessToken = m.Groups["token"].Value;
             accessTokenSecret = m.Groups["tokenSecret"].Value;
@@ -303,26 +315,115 @@ namespace Rhinemaidens
                 throw new TooLongTweetBodyException();
             }
 
-            string Url = "https://api.twitter.com/1.1/statuses/update.json";
+            try
+            {
+                var method = "POST";
+                var headerString = BuildHeaderString(HttpUtility.UrlEncode(postTweetUrl), method, "", "status=" + Uri.EscapeDataString(Body));
+                var sendBytes = Encoding.UTF8.GetBytes("status=" + Uri.EscapeDataString(Body));
+
+                var req = (HttpWebRequest)WebRequest.Create(postTweetUrl);
+                req.Method = method;
+                req.Headers.Add(HttpRequestHeader.Authorization, headerString);
+                req.ContentType = "application/x-www-form-urlencoded";
+                req.ContentLength = sendBytes.Length;
+                req.ServicePoint.Expect100Continue = false;
+
+                var reqStream = req.GetRequestStream();
+                reqStream.Write(sendBytes, 0, sendBytes.Length);
+                reqStream.Close();
+
+                var res = (HttpWebResponse)req.GetResponse();
+            }
+            catch (WebException e)
+            {
+                if (e.Status == WebExceptionStatus.ProtocolError)
+                {
+                    if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        throw new UnauthorizedException();
+                    }
+
+                    if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Forbidden)
+                    {
+                        throw new DuplicateTweetBodyException();
+                    }
+                }
+
+                throw new TwitterServerNotWorkingWellException();
+            }
+            catch
+            {
+                throw new TwitterServerNotWorkingWellException();
+            }
+        }
+
+        /// <summary>
+        /// 画像付きツイートを投稿します
+        /// </summary>
+        /// <param name="Body">本文</param>
+        /// <param name="ImageFilePath">画像のパス</param>
+        public void PostTweetWithImage(string Body, string ImageFilePath)
+        {
+            if (Body.Length > 140)
+            {
+                throw new TooLongTweetBodyException();
+            }
+
+            var method = "POST";
+            var headerString = BuildHeaderString(HttpUtility.UrlEncode(postTweetWithImageUrl), method, Body, "");
+
+            var randStr = DateTime.Now.Ticks.ToString("x");
+            var boundary = "--" + randStr;
+
+            var openBytes = Encoding.UTF8.GetBytes(
+                boundary + "\r\n" +
+                "Content-Type: application/x-www-form-urlencoded\r\n" +
+                "Content-Disposition: form-data; name=\"status\"\r\n" +
+                "\r\n" +
+                Body + "\r\n" +
+                boundary + "\r\n" +
+                "Content-Type: application/octet-stream\r\n" +
+                "Content-Disposition: form-data; name=\"media[]\"; filename=\"" + Path.GetFileName(ImageFilePath) + "\"\r\n" +
+                "\r\n"
+                );
+            var closeBytes = Encoding.UTF8.GetBytes(
+                "\r\n" +
+                boundary + "--"
+                );
 
             try
             {
-                string method = "POST";
-                string headerString = BuildHeaderString(HttpUtility.UrlEncode(Url), method, "", "status=" + Uri.EscapeDataString(Body));
-                byte[] SendBytes = Encoding.UTF8.GetBytes("status=" + Uri.EscapeDataString(Body));
+                var fs = new FileStream(ImageFilePath, FileMode.Open, FileAccess.Read);
 
-                HttpWebRequest Request = (HttpWebRequest)WebRequest.Create(Url);
-                Request.Method = method;
-                Request.Headers.Add(HttpRequestHeader.Authorization, headerString);
-                Request.ContentType = "application/x-www-form-urlencoded";
-                Request.ContentLength = SendBytes.Length;
-                Request.ServicePoint.Expect100Continue = false;
+                var req = (HttpWebRequest)WebRequest.Create(postTweetWithImageUrl);
+                req.Method = method;
+                req.Headers.Add(HttpRequestHeader.Authorization, headerString);
+                req.ContentType = "multipart/form-data; boundary=" + randStr;
+                req.ContentLength = openBytes.Length + closeBytes.Length + fs.Length;
+                req.Host = "api.twitter.com";
+                req.KeepAlive = true;
+                req.ServicePoint.Expect100Continue = false;
 
-                Stream ReqStream = Request.GetRequestStream();
-                ReqStream.Write(SendBytes, 0, SendBytes.Length);
-                ReqStream.Close();
+                var reqStream = req.GetRequestStream();
+                reqStream.Write(openBytes, 0, openBytes.Length);
 
-                HttpWebResponse Response = (HttpWebResponse)Request.GetResponse();
+                var readData = new byte[0x1000];
+                var readSize = 0;
+                while (true)
+                {
+                    readSize = fs.Read(readData, 0, readData.Length);
+                    if (readSize == 0)
+                    {
+                        break;
+                    }
+                    reqStream.Write(readData, 0, readSize);
+                }
+
+                reqStream.Write(closeBytes, 0, closeBytes.Length);
+                reqStream.Close();
+                fs.Close();
+
+                HttpWebResponse res = (HttpWebResponse)req.GetResponse();
             }
             catch (WebException e)
             {
@@ -353,6 +454,12 @@ namespace Rhinemaidens
             //TODO: 
         }
 
+        /// <summary>
+        /// 画像を取得します
+        /// </summary>
+        /// <param name="ImageUrl">URL</param>
+        /// <param name="Size">取得するサイズ</param>
+        /// <param name="Image">出力先Bitmap</param>
         public void GetImage(string ImageUrl, ImageSize Size, out Bitmap Image)
         {
             string url;
@@ -395,7 +502,7 @@ namespace Rhinemaidens
         /// <param name="IsGetAllReplies">フォロー外のリプライも取得する</param>
         public async void ConnectUserStream(bool IsGetAllReplies)
         {
-            IsStartedUserStream = true;
+            isStartedUserStream = true;
             try
             {
                 await Task.Run(() => GetUserStream(IsGetAllReplies));
@@ -411,144 +518,68 @@ namespace Rhinemaidens
         /// </summary>
         public void DisconnectUserStream()
         {
-            IsStartedUserStream = false;
+            isStartedUserStream = false;
         }
 
         private void GetUserStream(bool IsGetAllReplies)
         {
-            TweetInfo ti;
-            while (IsStartedUserStream)
+            while (isStartedUserStream)
             {
-                WebResponse Response = null;
+                WebResponse res = null;
+                int i = 0;
+
+                var method = "GET";
+                string headerString;
+                string url;
+                if (IsGetAllReplies)
                 {
-                    int i = 0;
-                    do
+                    url = userStreamUrl + "?replies=all";
+                    headerString = BuildHeaderString(HttpUtility.UrlEncode(userStreamUrl), method, "", "replies=all");
+                }
+                else
+                {
+                    url = userStreamUrl;
+                    headerString = BuildHeaderString(HttpUtility.UrlEncode(userStreamUrl), method, "", "");
+                }
+
+                do
+                {
+                    var req = (HttpWebRequest)HttpWebRequest.Create(url);
+                    req.Method = method;
+                    req.Headers.Add(HttpRequestHeader.Authorization, headerString);
+                    req.Timeout = Timeout.Infinite;
+                    req.ServicePoint.Expect100Continue = false;
+
+                    try
                     {
-                        string method = "GET";
-                        string headerString;
-                        string url;
-                        if (IsGetAllReplies)
+                        res = req.GetResponse();
+                        i = 0;
+                    }
+                    catch (WebException e)
+                    {
+                        if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Forbidden)
                         {
-                            url = userStreamUrl + "?replies=all";
-                            headerString = BuildHeaderString(HttpUtility.UrlEncode(userStreamUrl), method, "", "replies=all");
-                        }
-                        else
-                        {
-                            url = userStreamUrl;
-                            headerString = BuildHeaderString(HttpUtility.UrlEncode(userStreamUrl), method, "", "");
-                        }
-
-                        HttpWebRequest Request = (HttpWebRequest)HttpWebRequest.Create(url);
-                        Request.Method = method;
-                        Request.Headers.Add(HttpRequestHeader.Authorization, headerString);
-                        Request.Timeout = Timeout.Infinite;
-                        Request.ServicePoint.Expect100Continue = false;
-
-                        try
-                        {
-                            Response = Request.GetResponse();
-                        }
-                        catch (WebException e)
-                        {
-                            if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Forbidden)
+                            Thread.Sleep(2000 + (1000 * i));
+                            i++;
+                            if (i == 5)
                             {
-                                Thread.Sleep(2000 + (1000 * i));
-                                i++;
-                                if (i == 5)
-                                {
-                                    break;
+                                break;
 
-                                }
                             }
                         }
+                    }
 
-                    } while (Response == null);
-                }
-                StreamReader Stream = new StreamReader(Response.GetResponseStream());
+                } while (res == null);
+                var sr = new StreamReader(res.GetResponseStream());
 
-                while (IsStartedUserStream == true)
+                while (isStartedUserStream == true)
                 {
                     try
                     {
-                        string Text = Stream.ReadLine();
+                        string Text = sr.ReadLine();
                         if (Text != null && Text.Length > 0)
                         {
-                            var JsonRoot = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(Text);
-                            if (JsonRoot.ContainsKey("user") && JsonRoot.ContainsKey("text"))
-                            {
-                                ti = new TweetInfo();
-
-                                object tweetUserObj;
-                                object tweetIdObj;
-                                object tweetUserIdObj;
-                                object tweetNameObj;
-                                object tweetScreenNameObj;
-                                object tweetIconUrlObj;
-                                object tweetBodyObj;
-
-                                var tweetUserSB = new StringBuilder();
-                                JsonRoot.TryGetValue("user", out tweetUserObj);
-                                var jrs = new JavaScriptSerializer();
-                                jrs.Serialize(tweetUserObj, tweetUserSB);
-                                var JsonUser = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(tweetUserSB.ToString(0, tweetUserSB.Length));
-
-                                JsonRoot.TryGetValue("id", out tweetIdObj);
-                                JsonUser.TryGetValue("id", out tweetUserIdObj);
-                                JsonUser.TryGetValue("name", out tweetNameObj);
-                                JsonUser.TryGetValue("screen_name", out tweetScreenNameObj);
-                                JsonUser.TryGetValue("profile_image_url_https", out tweetIconUrlObj);
-                                JsonRoot.TryGetValue("text", out tweetBodyObj);
-
-                                ti.id = tweetIdObj.ToString();
-                                ti.userId = tweetUserIdObj.ToString();
-                                ti.screenName = tweetScreenNameObj.ToString();
-                                ti.name = tweetNameObj.ToString();
-                                ti.iconUrl = tweetIconUrlObj.ToString();
-                                ti.body = tweetBodyObj.ToString();
-
-                                object tweetRetweetedStatus;
-
-                                JsonRoot.TryGetValue("retweeted_status", out tweetRetweetedStatus);
-                                if (tweetRetweetedStatus != null)
-                                {
-                                    object retweetOriginUserObj;
-                                    object retweetOriginIdObj;
-                                    object retweetOriginUserIdObj;
-                                    object retweetOriginNameObj;
-                                    object retweetOriginScreenNameObj;
-                                    object retweetOriginIconUrlObj;
-                                    object retweetOriginBodyObj;
-
-                                    var tweetRetweetedStatusSB = new StringBuilder();
-                                    jrs.Serialize(tweetRetweetedStatus, tweetRetweetedStatusSB);
-                                    var JsonRetweet = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(tweetRetweetedStatusSB.ToString(0, tweetRetweetedStatusSB.Length));
-                                    JsonRetweet.TryGetValue("user", out retweetOriginUserObj);
-                                    var tweetRetweetedOriginUserSB = new StringBuilder();
-                                    jrs.Serialize(retweetOriginUserObj, tweetRetweetedOriginUserSB);
-                                    var JsonRetweetOriginUser = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(tweetRetweetedOriginUserSB.ToString(0, tweetRetweetedOriginUserSB.Length));
-
-                                    JsonRetweet.TryGetValue("id", out retweetOriginIdObj);
-                                    JsonRetweetOriginUser.TryGetValue("id", out retweetOriginUserIdObj);
-                                    JsonRetweetOriginUser.TryGetValue("name", out retweetOriginNameObj);
-                                    JsonRetweetOriginUser.TryGetValue("screen_name", out retweetOriginScreenNameObj);
-                                    JsonRetweetOriginUser.TryGetValue("profile_image_url_https", out retweetOriginIconUrlObj);
-                                    JsonRetweet.TryGetValue("text", out retweetOriginBodyObj);
-
-                                    ti.IsRetweet = true;
-                                    ti.OriginId = retweetOriginIdObj.ToString();
-                                    ti.OriginUserId = retweetOriginUserIdObj.ToString();
-                                    ti.OriginName = retweetOriginNameObj.ToString();
-                                    ti.OriginScreenName = retweetOriginScreenNameObj.ToString();
-                                    ti.OriginIconUrl = retweetOriginIconUrlObj.ToString();
-                                    ti.OriginBody = retweetOriginBodyObj.ToString();
-                                }
-                                else
-                                {
-                                    ti.IsRetweet = false;
-                                }
-
-                                TweetInfoQueue.Enqueue(ti);
-                            }
+                            ParseJsonOfUserStream(Text);
                         }
                         else
                         {
@@ -562,16 +593,96 @@ namespace Rhinemaidens
                 }
                 try
                 {
-                    Response.Close();
+                    res.Close();
                 }
                 catch { }
             }
 
-            if (IsStartedUserStream)
+            if (isStartedUserStream)
             {
                 throw new DeadOrDisconnectedUserStreamException();
             }
 
+        }
+
+        private void ParseJsonOfUserStream(string Text)
+        {
+            var jsonRoot = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(Text);
+            if (jsonRoot.ContainsKey("user") && jsonRoot.ContainsKey("text"))
+            {
+                var ti = new TweetInfo();
+
+                object tweetUserObj;
+                object tweetIdObj;
+                object tweetUserIdObj;
+                object tweetNameObj;
+                object tweetScreenNameObj;
+                object tweetIconUrlObj;
+                object tweetBodyObj;
+
+                var tweetUserSB = new StringBuilder();
+                jsonRoot.TryGetValue("user", out tweetUserObj);
+                var jrs = new JavaScriptSerializer();
+                jrs.Serialize(tweetUserObj, tweetUserSB);
+                var JsonUser = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(tweetUserSB.ToString(0, tweetUserSB.Length));
+
+                jsonRoot.TryGetValue("id", out tweetIdObj);
+                JsonUser.TryGetValue("id", out tweetUserIdObj);
+                JsonUser.TryGetValue("name", out tweetNameObj);
+                JsonUser.TryGetValue("screen_name", out tweetScreenNameObj);
+                JsonUser.TryGetValue("profile_image_url_https", out tweetIconUrlObj);
+                jsonRoot.TryGetValue("text", out tweetBodyObj);
+
+                ti.id = tweetIdObj.ToString();
+                ti.userId = tweetUserIdObj.ToString();
+                ti.screenName = tweetScreenNameObj.ToString();
+                ti.name = tweetNameObj.ToString();
+                ti.iconUrl = tweetIconUrlObj.ToString();
+                ti.body = tweetBodyObj.ToString();
+
+                object tweetRetweetedStatus;
+
+                jsonRoot.TryGetValue("retweeted_status", out tweetRetweetedStatus);
+                if (tweetRetweetedStatus != null)
+                {
+                    object retweetOriginUserObj;
+                    object retweetOriginIdObj;
+                    object retweetOriginUserIdObj;
+                    object retweetOriginNameObj;
+                    object retweetOriginScreenNameObj;
+                    object retweetOriginIconUrlObj;
+                    object retweetOriginBodyObj;
+
+                    var tweetRetweetedStatusSB = new StringBuilder();
+                    jrs.Serialize(tweetRetweetedStatus, tweetRetweetedStatusSB);
+                    var JsonRetweet = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(tweetRetweetedStatusSB.ToString(0, tweetRetweetedStatusSB.Length));
+                    JsonRetweet.TryGetValue("user", out retweetOriginUserObj);
+                    var tweetRetweetedOriginUserSB = new StringBuilder();
+                    jrs.Serialize(retweetOriginUserObj, tweetRetweetedOriginUserSB);
+                    var JsonRetweetOriginUser = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(tweetRetweetedOriginUserSB.ToString(0, tweetRetweetedOriginUserSB.Length));
+
+                    JsonRetweet.TryGetValue("id", out retweetOriginIdObj);
+                    JsonRetweetOriginUser.TryGetValue("id", out retweetOriginUserIdObj);
+                    JsonRetweetOriginUser.TryGetValue("name", out retweetOriginNameObj);
+                    JsonRetweetOriginUser.TryGetValue("screen_name", out retweetOriginScreenNameObj);
+                    JsonRetweetOriginUser.TryGetValue("profile_image_url_https", out retweetOriginIconUrlObj);
+                    JsonRetweet.TryGetValue("text", out retweetOriginBodyObj);
+
+                    ti.IsRetweet = true;
+                    ti.OriginId = retweetOriginIdObj.ToString();
+                    ti.OriginUserId = retweetOriginUserIdObj.ToString();
+                    ti.OriginName = retweetOriginNameObj.ToString();
+                    ti.OriginScreenName = retweetOriginScreenNameObj.ToString();
+                    ti.OriginIconUrl = retweetOriginIconUrlObj.ToString();
+                    ti.OriginBody = retweetOriginBodyObj.ToString();
+                }
+                else
+                {
+                    ti.IsRetweet = false;
+                }
+
+                tweetInfoQueue.Enqueue(ti);
+            }
         }
 
         /// <summary>
@@ -600,30 +711,42 @@ namespace Rhinemaidens
             g.DrawImage(SourceImage, 0, 0, ResizedImage.Width, ResizedImage.Height);
         }
 
+        /// <summary>
+        /// リツイート用の画像を生成します
+        /// </summary>
+        /// <param name="SourceImage">リツイートしたアカウントのアイコン</param>
+        /// <param name="SourceImageWidth">幅</param>
+        /// <param name="SourceImageHeight">高さ</param>
+        /// <param name="SourceOriginImage">リツイートされたアカウントのアイコン</param>
+        /// <param name="SourceOriginImageWidth">幅</param>
+        /// <param name="SourceOriginImageHeight">高さ</param>
+        /// <param name="OffsetX">リツイートされたアカウントのアイコンの横位置</param>
+        /// <param name="OffsetY">リツイートされたアカウントのアイコンの縦位置</param>
+        /// <param name="GeneratedImage"></param>
         public void GenerateRetweeterImage(Bitmap SourceImage, int SourceImageWidth, int SourceImageHeight, Bitmap SourceOriginImage, int SourceOriginImageWidth, int SourceOriginImageHeight, int OffsetX, int OffsetY, out Bitmap GeneratedImage)
         {
-            double SourceOriginImageZoom;
-            double SourceImageZoom;
+            double sourceOriginImageZoom;
+            double sourceImageZoom;
 
             if ((double)SourceImageWidth / (double)SourceImageHeight <= (double)SourceImage.Width / (double)SourceImage.Height)
             {
-                SourceImageZoom = (double)SourceImageWidth / (double)SourceImage.Width;
+                sourceImageZoom = (double)SourceImageWidth / (double)SourceImage.Width;
             }
             else
             {
-                SourceImageZoom = (double)SourceImageHeight / (double)SourceImage.Height;
+                sourceImageZoom = (double)SourceImageHeight / (double)SourceImage.Height;
             }
 
             if ((double)SourceOriginImageWidth / (double)SourceOriginImageHeight <= (double)SourceOriginImage.Width / (double)SourceOriginImage.Height)
             {
-                SourceOriginImageZoom = (double)SourceOriginImageWidth / (double)SourceOriginImage.Width;
+                sourceOriginImageZoom = (double)SourceOriginImageWidth / (double)SourceOriginImage.Width;
             }
             else
             {
-                SourceOriginImageZoom = (double)SourceOriginImageHeight / (double)SourceOriginImage.Height;
+                sourceOriginImageZoom = (double)SourceOriginImageHeight / (double)SourceOriginImage.Height;
             }
 
-            GeneratedImage = new Bitmap((int)(SourceImage.Width * SourceImageZoom), (int)(SourceImage.Height * SourceImageZoom));
+            GeneratedImage = new Bitmap((int)(SourceImage.Width * sourceImageZoom), (int)(SourceImage.Height * sourceImageZoom));
             using (var g = Graphics.FromImage(GeneratedImage))
             {
                 g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;

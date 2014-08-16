@@ -40,6 +40,21 @@ namespace Rhinemaidens
         void PostTweet(string Body);
 
         /// <summary>
+        /// 画像付きツイートを投稿します
+        /// </summary>
+        /// <param name="Body">本文</param>
+        /// <param name="ImageFilePath">画像のパス</param>
+        public void PostTweetWithImage(string Body, string ImageFilePath);
+
+        /// <summary>
+        /// 画像を取得します
+        /// </summary>
+        /// <param name="ImageUrl">URL</param>
+        /// <param name="Size">取得するサイズ</param>
+        /// <param name="Image">出力先Bitmap</param>
+        public void GetImage(string ImageUrl, Rhinemaidens.Lorelei.ImageSize Size, out Bitmap Image);
+
+        /// <summary>
         /// UserStreamに接続します
         /// </summary>
         /// <param name="IsGetAllReplies">フォロー外のリプライも取得する</param>
@@ -58,5 +73,20 @@ namespace Rhinemaidens
         /// <param name="Height">高さ</param>
         /// <param name="ResizedImage">リサイズ後の画像</param>
         void ResizeImage(Bitmap SourceImage, int Width, int Height, out Bitmap ResizedImage);
+
+        /// <summary>
+        /// リツイート用の画像を生成します
+        /// </summary>
+        /// <param name="SourceImage">リツイートしたアカウントのアイコン</param>
+        /// <param name="SourceImageWidth">幅</param>
+        /// <param name="SourceImageHeight">高さ</param>
+        /// <param name="SourceOriginImage">リツイートされたアカウントのアイコン</param>
+        /// <param name="SourceOriginImageWidth">幅</param>
+        /// <param name="SourceOriginImageHeight">高さ</param>
+        /// <param name="OffsetX">リツイートされたアカウントのアイコンの横位置</param>
+        /// <param name="OffsetY">リツイートされたアカウントのアイコンの縦位置</param>
+        /// <param name="GeneratedImage"></param>
+        public void GenerateRetweeterImage(Bitmap SourceImage, int SourceImageWidth, int SourceImageHeight, Bitmap SourceOriginImage, int SourceOriginImageWidth, int SourceOriginImageHeight, int OffsetX, int OffsetY, out Bitmap GeneratedImage);
+        
     }
 }

@@ -147,6 +147,7 @@
     <Content Include="InfrastructureAssemblies\Livet.XML" />
     <Content Include="InfrastructureAssemblies\Microsoft.Expression.Interactions.dll" />
     <Content Include="InfrastructureAssemblies\System.Windows.Interactivity.dll" />
+    <Resource Include="Views\Resource\appbar.image.png" />
     <Resource Include="Views\Resource\icon256.png" />
     <EmbeddedResource Include="Views\Resource\ToastStream.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
