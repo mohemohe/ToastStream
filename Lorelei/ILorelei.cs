@@ -44,7 +44,7 @@ namespace Rhinemaidens
         /// </summary>
         /// <param name="Body">本文</param>
         /// <param name="ImageFilePath">画像のパス</param>
-        public void PostTweetWithImage(string Body, string ImageFilePath);
+        void PostTweetWithImage(string Body, string ImageFilePath);
 
         /// <summary>
         /// 画像を取得します
@@ -52,7 +52,7 @@ namespace Rhinemaidens
         /// <param name="ImageUrl">URL</param>
         /// <param name="Size">取得するサイズ</param>
         /// <param name="Image">出力先Bitmap</param>
-        public void GetImage(string ImageUrl, Rhinemaidens.Lorelei.ImageSize Size, out Bitmap Image);
+        void GetImage(string ImageUrl, Rhinemaidens.Lorelei.ImageSize Size, out Bitmap Image);
 
         /// <summary>
         /// UserStreamに接続します
@@ -86,7 +86,7 @@ namespace Rhinemaidens
         /// <param name="OffsetX">リツイートされたアカウントのアイコンの横位置</param>
         /// <param name="OffsetY">リツイートされたアカウントのアイコンの縦位置</param>
         /// <param name="GeneratedImage"></param>
-        public void GenerateRetweeterImage(Bitmap SourceImage, int SourceImageWidth, int SourceImageHeight, Bitmap SourceOriginImage, int SourceOriginImageWidth, int SourceOriginImageHeight, int OffsetX, int OffsetY, out Bitmap GeneratedImage);
+        void GenerateRetweeterImage(Bitmap SourceImage, int SourceImageWidth, int SourceImageHeight, Bitmap SourceOriginImage, int SourceOriginImageWidth, int SourceOriginImageHeight, int OffsetX, int OffsetY, out Bitmap GeneratedImage);
         
     }
 }
