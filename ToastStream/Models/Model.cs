@@ -60,7 +60,7 @@ namespace ToastStream.Models
                     {
                         lorelei.GetImage(ti.OriginIconUrl, Lorelei.ImageSize.Original, out img1);
                         lorelei.GetImage(ti.iconUrl, Lorelei.ImageSize.Original, out img2);
-                        lorelei.GenerateRetweeterImage(img1, 150, 150, img2, 50, 50, 100, 100, out outImg);
+                        lorelei.GenerateRetweeterImage(150, 150, img1, 128, 128, img2, 64, 64, out outImg);
                         outImg.Save(tmpImg);
 
                         Toast.ToastToastImageAndText02("@" + ti.OriginScreenName + " / " + ti.OriginName, ti.OriginBody, tmpImg);
@@ -68,7 +68,7 @@ namespace ToastStream.Models
                     else
                     {
                         lorelei.GetImage(ti.iconUrl, Lorelei.ImageSize.Original, out img1);
-                        lorelei.ResizeImage(img1, 150, 150, out outImg);
+                        lorelei.ResizeImage(150, 150, img1, out outImg);
                         outImg.Save(tmpImg);
 
                         Toast.ToastToastImageAndText02("@" + ti.screenName + " / " + ti.name, ti.body, tmpImg);

@@ -30,7 +30,7 @@ namespace ToastStream.Helpers
             notifyIcon.Icon = new Icon(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ToastStream.Views.Resource.ToastStream.ico"));
             notifyIcon.Visible = true;
 
-            notifyIcon.DoubleClick += (sender, e) => MainWindowOpen();
+            notifyIcon.DoubleClick += (sender, e) => TweetWindowOpen();
 
             var cms = new ContextMenuStrip();
             var tsmi1 = new ToolStripMenuItem("Tweet");
@@ -38,9 +38,9 @@ namespace ToastStream.Helpers
             var tsmi3 = new ToolStripMenuItem("Exit");
             cms.Items.AddRange(new ToolStripMenuItem[] { tsmi1, tsmi2, tsmi3 });
 
-            tsmi1.Click += (sender, e) => MainWindowOpen();
+            tsmi1.Click += (sender, e) => TweetWindowOpen();
             tsmi2.Click += (sender, e) => ConfigWindowOpen(true);
-            tsmi3.Click += (sender, e) => MainWindowExit();
+            tsmi3.Click += (sender, e) => TweetWindowExit();
 
             notifyIcon.ContextMenuStrip = cms;
 
@@ -56,7 +56,15 @@ namespace ToastStream.Helpers
                 ConfigWindowOpen(false);
             }
 
-            await Task.Run(() => m = new Model());
+            if (Settings.AccessToken != null)
+            {
+                Settings.WriteSettings();
+                await Task.Run(() => m = new Model());
+            }
+            else
+            {
+                TweetWindowExit();
+            }
         }
 
         public static void Dispose()
@@ -64,20 +72,21 @@ namespace ToastStream.Helpers
             notifyIcon.Dispose();
         }
 
-        private static void MainWindowOpen()
+        private static void TweetWindowOpen()
         {
             tw.Show();
             tw.Activate();
         }
 
-        public static void MainWindowClose()
+        public static void TweetWindowClose()
         {
             tw.Hide();
         }
 
-        public static void MainWindowExit()
+        public static void TweetWindowExit()
         {
             Settings.WriteSettings();
+            Dispose();
             tw.Exit();
         }
 

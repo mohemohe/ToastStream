@@ -72,7 +72,7 @@ namespace Rhinemaidens
         /// <param name="Width">幅</param>
         /// <param name="Height">高さ</param>
         /// <param name="ResizedImage">リサイズ後の画像</param>
-        void ResizeImage(Bitmap SourceImage, int Width, int Height, out Bitmap ResizedImage);
+        void ResizeImage(int Width, int Height, Bitmap SourceImage, out Bitmap ResizedImage);
 
         /// <summary>
         /// リツイート用の画像を生成します
@@ -86,7 +86,7 @@ namespace Rhinemaidens
         /// <param name="OffsetX">リツイートされたアカウントのアイコンの横位置</param>
         /// <param name="OffsetY">リツイートされたアカウントのアイコンの縦位置</param>
         /// <param name="GeneratedImage"></param>
-        void GenerateRetweeterImage(Bitmap SourceImage, int SourceImageWidth, int SourceImageHeight, Bitmap SourceOriginImage, int SourceOriginImageWidth, int SourceOriginImageHeight, int OffsetX, int OffsetY, out Bitmap GeneratedImage);
+        void GenerateRetweeterImage(int Width, int Height, Bitmap SourceOriginImage, int SourceOriginImageWidth, int SourceOriginImageHeight, Bitmap SourceRetweeterImage, int SourceRetweeterImageWidth, int SourceRetweeterImageHeight, out Bitmap GeneratedImage);
         
     }
 }

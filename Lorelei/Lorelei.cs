@@ -557,16 +557,45 @@ namespace Rhinemaidens
                     }
                     catch (WebException e)
                     {
-                        if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.Forbidden)
+                        if ((int)((HttpWebResponse)e.Response).StatusCode == 420)
                         {
-                            Thread.Sleep(2000 + (1000 * i));
-                            i++;
-                            if (i == 5)
+                            var sleepTime = 5 * 1000 * Math.Pow(2, i);
+
+                            if (sleepTime > 300 * 100 * 1000)
                             {
                                 break;
 
                             }
+
+                            Thread.Sleep((int)sleepTime);
+                            i++;
                         }
+                        else
+                        {
+                            var sleepTime = 5 * 1000 * Math.Pow(2, i);
+
+                            if (sleepTime > 320 * 1000)
+                            {
+                                break;
+
+                            }
+
+                            Thread.Sleep((int)sleepTime);
+                            i++;
+                        }
+                    }
+                    catch
+                    {
+                        var sleepTime = 250 * Math.Pow(2, i);
+
+                        if (sleepTime > 16 * 1000)
+                        {
+                            break;
+
+                        }
+
+                        Thread.Sleep((int)sleepTime);
+                        i++;
                     }
 
                 } while (res == null);
@@ -692,7 +721,7 @@ namespace Rhinemaidens
         /// <param name="Width">幅</param>
         /// <param name="Height">高さ</param>
         /// <param name="ResizedImage">リサイズ後の画像</param>
-        public void ResizeImage(Bitmap SourceImage, int Width, int Height, out Bitmap ResizedImage)
+        public void ResizeImage(int Width, int Height, Bitmap SourceImage, out Bitmap ResizedImage)
         {
             double zoom;
 
@@ -707,7 +736,7 @@ namespace Rhinemaidens
 
             ResizedImage = new Bitmap((int)(SourceImage.Width * zoom), (int)(SourceImage.Height * zoom));
             var g = Graphics.FromImage(ResizedImage);
-            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
             g.DrawImage(SourceImage, 0, 0, ResizedImage.Width, ResizedImage.Height);
         }
 
@@ -720,38 +749,20 @@ namespace Rhinemaidens
         /// <param name="SourceOriginImage">リツイートされたアカウントのアイコン</param>
         /// <param name="SourceOriginImageWidth">幅</param>
         /// <param name="SourceOriginImageHeight">高さ</param>
-        /// <param name="OffsetX">リツイートされたアカウントのアイコンの横位置</param>
-        /// <param name="OffsetY">リツイートされたアカウントのアイコンの縦位置</param>
         /// <param name="GeneratedImage"></param>
-        public void GenerateRetweeterImage(Bitmap SourceImage, int SourceImageWidth, int SourceImageHeight, Bitmap SourceOriginImage, int SourceOriginImageWidth, int SourceOriginImageHeight, int OffsetX, int OffsetY, out Bitmap GeneratedImage)
+        public void GenerateRetweeterImage(int Width, int Height, Bitmap SourceOriginImage, int SourceOriginImageWidth, int SourceOriginImageHeight, Bitmap SourceRetweeterImage, int SourceRetweeterImageWidth, int SourceRetweeterImageHeight, out Bitmap GeneratedImage)
         {
-            double sourceOriginImageZoom;
-            double sourceImageZoom;
+            Bitmap tmpSourceOriginImage, tmpSourceRetweeterImage;
 
-            if ((double)SourceImageWidth / (double)SourceImageHeight <= (double)SourceImage.Width / (double)SourceImage.Height)
-            {
-                sourceImageZoom = (double)SourceImageWidth / (double)SourceImage.Width;
-            }
-            else
-            {
-                sourceImageZoom = (double)SourceImageHeight / (double)SourceImage.Height;
-            }
-
-            if ((double)SourceOriginImageWidth / (double)SourceOriginImageHeight <= (double)SourceOriginImage.Width / (double)SourceOriginImage.Height)
-            {
-                sourceOriginImageZoom = (double)SourceOriginImageWidth / (double)SourceOriginImage.Width;
-            }
-            else
-            {
-                sourceOriginImageZoom = (double)SourceOriginImageHeight / (double)SourceOriginImage.Height;
-            }
-
-            GeneratedImage = new Bitmap((int)(SourceImage.Width * sourceImageZoom), (int)(SourceImage.Height * sourceImageZoom));
+            ResizeImage(SourceOriginImageWidth, SourceOriginImageHeight, SourceOriginImage, out tmpSourceOriginImage);
+            ResizeImage(SourceRetweeterImageWidth, SourceRetweeterImageHeight, SourceRetweeterImage, out tmpSourceRetweeterImage);
+            
+            GeneratedImage = new Bitmap(Width, Height);
             using (var g = Graphics.FromImage(GeneratedImage))
             {
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.DrawImage(SourceImage, 0, 0, GeneratedImage.Width, GeneratedImage.Height);
-                g.DrawImage(SourceOriginImage, OffsetX, OffsetY, SourceOriginImageWidth, SourceOriginImageHeight);
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
+                g.DrawImage(tmpSourceOriginImage, 0, 0, tmpSourceOriginImage.Width, tmpSourceOriginImage.Height);
+                g.DrawImage(tmpSourceRetweeterImage, GeneratedImage.Width - tmpSourceRetweeterImage.Width, GeneratedImage.Height - tmpSourceRetweeterImage.Height, tmpSourceRetweeterImage.Width, tmpSourceRetweeterImage.Height);
             }
         }
     }

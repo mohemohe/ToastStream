@@ -218,6 +218,11 @@ namespace ToastStream.ViewModels
                 var mbp = new MessageBoxPack("前回のツイートと同じ文章のようです。", "ツイート エラー");
                 MessageBoxHelper.AddMessageBoxQueue(mbp);
             }
+            catch (UnauthorizedException)
+            {
+                var mbp = new MessageBoxPack("Twitterとの認証情報のやりとりに失敗しました。", "ツイート エラー");
+                MessageBoxHelper.AddMessageBoxQueue(mbp);
+            }
             catch (TwitterServerNotWorkingWellException)
             {
                 var mbp = new MessageBoxPack("Twitterから不明なエラーが返ってきました。", "ツイート エラー");

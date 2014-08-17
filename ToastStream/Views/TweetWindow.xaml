@@ -37,7 +37,7 @@
     </i:Interaction.Triggers>
 
     <Grid>
-        <Image Margin="437,10,10,44" Source="{Binding TweetImagePreview}"/>
+        <Image Margin="437,10,10,44" Source="{Binding TweetImagePreview}" RenderOptions.BitmapScalingMode="HighQuality" />
         <TextBox Text="{Binding TweetBody, UpdateSourceTrigger=PropertyChanged}" Margin="10,10,10,44" AcceptsReturn="True" TextWrapping="Wrap" FontFamily="Meiryo" Background="#CCFFFFFF" />
         <Label Content="{Binding TweetLength}" HorizontalAlignment="Right" Margin="0,0,90,10" Height="25" VerticalAlignment="Bottom"/>
         <Button Content="ツイート" Command="{Binding PostTweetCommand}"  Margin="0,0,10,13" HorizontalAlignment="Right" Width="75" Height="19" VerticalAlignment="Bottom"/>
