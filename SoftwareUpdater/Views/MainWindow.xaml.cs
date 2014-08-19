@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ToastStream.Views
+namespace SoftwareUpdater.Views
 {
     /* 
      * ViewModelからの変更通知などの各種イベントを受け取る場合は、PropertyChangedWeakEventListenerや
@@ -23,13 +23,18 @@ namespace ToastStream.Views
      */
 
     /// <summary>
-    /// TweetWindow.xaml の相互作用ロジック
+    /// MainWindow.xaml の相互作用ロジック
     /// </summary>
-    public partial class TweetWindow : Window
+    public partial class MainWindow : Window
     {
-        public TweetWindow()
+        public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void TextBlock_TargetUpdated(object sender, DataTransferEventArgs e)
+        {
+            this.LogTextBlock.ScrollToBottom();
         }
     }
 }

@@ -6,7 +6,7 @@
         xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
         xmlns:v="clr-namespace:ToastStream.Views"
         xmlns:vm="clr-namespace:ToastStream.ViewModels"
-        Title="ツイート" Height="185" Width="555" Closing="Window_Closing" Icon="Resource/icon256.png" ResizeMode="NoResize">
+        Title="ツイート" Height="185" Width="555" Icon="Resource/icon256.png" ResizeMode="NoResize">
 
     <Window.DataContext>
         <vm:TweetWindowViewModel/>
@@ -37,7 +37,7 @@
     </i:Interaction.Triggers>
 
     <Grid>
-        <Image Margin="437,10,10,44" Source="{Binding TweetImagePreview}"/>
+        <Image Margin="437,10,10,44" Source="{Binding TweetImagePreview}" RenderOptions.BitmapScalingMode="HighQuality" />
         <TextBox Text="{Binding TweetBody, UpdateSourceTrigger=PropertyChanged}" Margin="10,10,10,44" AcceptsReturn="True" TextWrapping="Wrap" FontFamily="Meiryo" Background="#CCFFFFFF" />
         <Label Content="{Binding TweetLength}" HorizontalAlignment="Right" Margin="0,0,90,10" Height="25" VerticalAlignment="Bottom"/>
         <Button Content="ツイート" Command="{Binding PostTweetCommand}"  Margin="0,0,10,13" HorizontalAlignment="Right" Width="75" Height="19" VerticalAlignment="Bottom"/>
@@ -47,7 +47,7 @@
         		<i:EventTrigger EventName="Click">
         			<l:OpenFileDialogInteractionMessageAction>
                         <l:DirectInteractionMessage CallbackCommand="{Binding OpenImageCommand}">
-        					<l:OpeningFileSelectionMessage Filter="すべてのファイル(*.*)|*.*" Title="ツイートする画像の選択"/>
+                            <l:OpeningFileSelectionMessage Filter="画像ファイル(*.jpg;*.jpeg;*.png;*.gif)|*.jpg;*.jpeg;*.png;*.gif|すべてのファイル(*.*)|*.*" Title="ツイートする画像の選択"/>
         				</l:DirectInteractionMessage>
         			</l:OpenFileDialogInteractionMessageAction>
         		</i:EventTrigger>

@@ -6,6 +6,8 @@ using System.Text;
 using Livet;
 using Rhinemaidens;
 using Win8Toast;
+using System.Drawing;
+using ToastStream.Helpers;
 
 namespace ToastStream.Models
 {
@@ -38,6 +40,8 @@ namespace ToastStream.Models
         private void ToastStream()
         {
             Lorelei.TweetInfo ti;
+            Bitmap img1, img2, outImg;
+            var tmpImg = "~tmpIcon";
 
             try
             {
@@ -47,20 +51,27 @@ namespace ToastStream.Models
             {
                 lorelei.ConnectUserStream(Settings.ReceiveAllReplies);
             }
+
+            var ico = new System.Drawing.Icon(System.Environment.CurrentDirectory + "\\ToastStream.ico", 256, 256);
+            img1 = ico.ToBitmap();
+            ico.Dispose();
+            lorelei.ResizeImage(150, 150, img1, out outImg);
+            outImg.Save(tmpImg);
+            Toast.ToastToastImageAndText02("ToastStream", "UserStreamに接続しました", tmpImg);
+
             while (true)
             {
                 try
                 {
                     ti = lorelei.tweetInfoQueue.Dequeue();
 
-                    System.Drawing.Bitmap img1, img2, outImg;
-                    var tmpImg = "~tmpIcon";
+                    
 
                     if (ti.IsRetweet == true)
                     {
                         lorelei.GetImage(ti.OriginIconUrl, Lorelei.ImageSize.Original, out img1);
                         lorelei.GetImage(ti.iconUrl, Lorelei.ImageSize.Original, out img2);
-                        lorelei.GenerateRetweeterImage(img1, 150, 150, img2, 50, 50, 100, 100, out outImg);
+                        lorelei.GenerateRetweeterImage(150, 150, img1, 128, 128, img2, 64, 64, out outImg);
                         outImg.Save(tmpImg);
 
                         Toast.ToastToastImageAndText02("@" + ti.OriginScreenName + " / " + ti.OriginName, ti.OriginBody, tmpImg);
@@ -68,11 +79,16 @@ namespace ToastStream.Models
                     else
                     {
                         lorelei.GetImage(ti.iconUrl, Lorelei.ImageSize.Original, out img1);
-                        lorelei.ResizeImage(img1, 150, 150, out outImg);
+                        lorelei.ResizeImage(150, 150, img1, out outImg);
                         outImg.Save(tmpImg);
 
                         Toast.ToastToastImageAndText02("@" + ti.screenName + " / " + ti.name, ti.body, tmpImg);
                     }
+
+                    img1 = null;
+                    img2 = null;
+                    outImg = null;
+                    ti = null;
                 }
                 catch (DeadOrDisconnectedUserStreamException)
                 {

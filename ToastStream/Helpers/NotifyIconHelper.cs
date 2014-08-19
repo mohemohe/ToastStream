@@ -19,18 +19,20 @@ namespace ToastStream.Helpers
     {
         private static NotifyIcon notifyIcon;
         private static Model m;
-        private static TweetWindow tw;
-        private static ConfigWindow cw;
+        private static DummyWindow dw;
 
         public static async void Initialize()
         {
             Settings.Initialize();
 
+            var uch = new UpdateCheckHelper();
+            uch.UpdateCheck();
+
             notifyIcon = new NotifyIcon();
             notifyIcon.Icon = new Icon(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ToastStream.Views.Resource.ToastStream.ico"));
             notifyIcon.Visible = true;
 
-            notifyIcon.DoubleClick += (sender, e) => MainWindowOpen();
+            notifyIcon.DoubleClick += (sender, e) => TweetWindowOpen();
 
             var cms = new ContextMenuStrip();
             var tsmi1 = new ToolStripMenuItem("Tweet");
@@ -38,25 +40,28 @@ namespace ToastStream.Helpers
             var tsmi3 = new ToolStripMenuItem("Exit");
             cms.Items.AddRange(new ToolStripMenuItem[] { tsmi1, tsmi2, tsmi3 });
 
-            tsmi1.Click += (sender, e) => MainWindowOpen();
+            tsmi1.Click += (sender, e) => TweetWindowOpen();
             tsmi2.Click += (sender, e) => ConfigWindowOpen(true);
-            tsmi3.Click += (sender, e) => MainWindowExit();
+            tsmi3.Click += (sender, e) => DummyWindowExit();
 
             notifyIcon.ContextMenuStrip = cms;
 
-            tw = new TweetWindow();
-            tw.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
-
-            var desktop = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea;
-            tw.Top = desktop.Height - tw.Height;
-            tw.Left = desktop.Width - tw.Width;
+            dw = new DummyWindow(); // ループの確保
 
             if (Settings.AccessToken == null)
             {
                 ConfigWindowOpen(false);
             }
 
-            await Task.Run(() => m = new Model());
+            if (Settings.AccessToken != null)
+            {
+                Settings.WriteSettings();
+                await Task.Run(() => m = new Model());
+            }
+            else
+            {
+                DummyWindowExit();
+            }
         }
 
         public static void Dispose()
@@ -64,44 +69,38 @@ namespace ToastStream.Helpers
             notifyIcon.Dispose();
         }
 
-        private static void MainWindowOpen()
+        private static void TweetWindowOpen()
         {
-            tw.Show();
-            tw.Activate();
+            var tw = new TweetWindow();
+            tw.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+
+            var desktop = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea;
+            tw.Top = desktop.Height - tw.Height;
+            tw.Left = desktop.Width - tw.Width;
+
+            tw.ShowDialog();
+
+            tw = null;
         }
 
-        public static void MainWindowClose()
-        {
-            tw.Hide();
-        }
-
-        public static void MainWindowExit()
+        public static void DummyWindowExit()
         {
             Settings.WriteSettings();
-            tw.Exit();
+
+            dw.Exit();
         }
 
         public static void ConfigWindowOpen(bool SaveSettings)
         {
-            if (cw == null)
-            {
-                cw = new ConfigWindow();
-                cw.ShowDialog();
+            var cw = new ConfigWindow();
+            cw.ShowDialog();
 
-                cw = null;
-                if (SaveSettings == true)
-                {
-                    Settings.WriteSettings();
-                }
-            }
-            else
+            if (SaveSettings == true)
             {
-                try
-                {
-                    cw.Activate();
-                }
-                catch { }
+                Settings.WriteSettings();
             }
+
+            cw = null;
         }
 
         #region public static void ShowNotifyBaloon()

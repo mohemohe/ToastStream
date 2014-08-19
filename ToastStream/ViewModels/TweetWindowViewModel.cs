@@ -17,6 +17,7 @@ using ToastStream.Helpers;
 using System.Drawing;
 using System.IO;
 using System.Windows.Media.Imaging;
+using System.Threading.Tasks;
 
 namespace ToastStream.ViewModels
 {
@@ -203,10 +204,6 @@ namespace ToastStream.ViewModels
                         PostTweetBodyOnly();
                     }
                 }
-
-                TweetBody = "";
-                TweetImageFilePath = null;
-                TweetImagePreview = null;
             }
             catch (TooLongTweetBodyException)
             {
@@ -218,6 +215,11 @@ namespace ToastStream.ViewModels
                 var mbp = new MessageBoxPack("前回のツイートと同じ文章のようです。", "ツイート エラー");
                 MessageBoxHelper.AddMessageBoxQueue(mbp);
             }
+            catch (UnauthorizedException)
+            {
+                var mbp = new MessageBoxPack("Twitterとの認証情報のやりとりに失敗しました。", "ツイート エラー");
+                MessageBoxHelper.AddMessageBoxQueue(mbp);
+            }
             catch (TwitterServerNotWorkingWellException)
             {
                 var mbp = new MessageBoxPack("Twitterから不明なエラーが返ってきました。", "ツイート エラー");
@@ -225,28 +227,80 @@ namespace ToastStream.ViewModels
             }
         }
 
-        private void PostTweetBodyOnly()
+        private async void PostTweetBodyOnly()
         {
-            try
+            await Task.Run(() => 
             {
-                lorelei.PostTweet(TweetBody);
-            }
-            catch { throw; }
+                try
+                {
+                    lorelei.PostTweet(TweetBody);
+
+                    TweetBody = "";
+                    TweetImageFilePath = null;
+                    TweetImagePreview = null;
+                }
+                catch (TooLongTweetBodyException)
+                {
+                    var mbp = new MessageBoxPack("ツイート本文は140文字までです。", "ツイート エラー");
+                    MessageBoxHelper.AddMessageBoxQueue(mbp);
+                }
+                catch (DuplicateTweetBodyException)
+                {
+                    var mbp = new MessageBoxPack("前回のツイートと同じ文章のようです。", "ツイート エラー");
+                    MessageBoxHelper.AddMessageBoxQueue(mbp);
+                }
+                catch (UnauthorizedException)
+                {
+                    var mbp = new MessageBoxPack("Twitterとの認証情報のやりとりに失敗しました。", "ツイート エラー");
+                    MessageBoxHelper.AddMessageBoxQueue(mbp);
+                }
+                catch (TwitterServerNotWorkingWellException)
+                {
+                    var mbp = new MessageBoxPack("Twitterから不明なエラーが返ってきました。", "ツイート エラー");
+                    MessageBoxHelper.AddMessageBoxQueue(mbp);
+                }
+            });
         }
 
-        private void PostTweetWithImage()
+        private async void PostTweetWithImage()
         {
-            try
+            if (String.IsNullOrEmpty(TweetBody) == true)
             {
-                if (String.IsNullOrEmpty(TweetBody) == true)
-                {
-                    TweetBody = "";
-                }
-                lorelei.PostTweetWithImage(TweetBody, TweetImageFilePath);
+                TweetBody = "";
             }
-            catch { throw; }
+            await Task.Run(() =>
+            {
+                try
+                {
+                    lorelei.PostTweetWithImage(TweetBody, TweetImageFilePath);
+
+                    TweetBody = "";
+                    TweetImageFilePath = null;
+                    TweetImagePreview = null;
+                }
+                catch (TooLongTweetBodyException)
+                {
+                    var mbp = new MessageBoxPack("ツイート本文は140文字までです。", "ツイート エラー");
+                    MessageBoxHelper.AddMessageBoxQueue(mbp);
+                }
+                catch (DuplicateTweetBodyException)
+                {
+                    var mbp = new MessageBoxPack("前回のツイートと同じ文章のようです。", "ツイート エラー");
+                    MessageBoxHelper.AddMessageBoxQueue(mbp);
+                }
+                catch (UnauthorizedException)
+                {
+                    var mbp = new MessageBoxPack("Twitterとの認証情報のやりとりに失敗しました。\n画像の送信に時間がかかりすぎています。", "ツイート エラー");
+                    MessageBoxHelper.AddMessageBoxQueue(mbp);
+                }
+                catch (TwitterServerNotWorkingWellException)
+                {
+                    var mbp = new MessageBoxPack("Twitterから不明なエラーが返ってきました。", "ツイート エラー");
+                    MessageBoxHelper.AddMessageBoxQueue(mbp);
+                }
+            });
+
         }
         #endregion
-
     }
 }
