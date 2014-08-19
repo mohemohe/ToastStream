@@ -25,6 +25,9 @@ namespace ToastStream.Helpers
         {
             Settings.Initialize();
 
+            var uch = new UpdateCheckHelper();
+            uch.UpdateCheck();
+
             notifyIcon = new NotifyIcon();
             notifyIcon.Icon = new Icon(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ToastStream.Views.Resource.ToastStream.ico"));
             notifyIcon.Visible = true;

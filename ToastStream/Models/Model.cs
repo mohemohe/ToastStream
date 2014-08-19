@@ -7,6 +7,7 @@ using Livet;
 using Rhinemaidens;
 using Win8Toast;
 using System.Drawing;
+using ToastStream.Helpers;
 
 namespace ToastStream.Models
 {

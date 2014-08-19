@@ -185,6 +185,40 @@ namespace ToastStream.ViewModels
         }
         #endregion
 
+        #region AllowUpdateCheck変更通知プロパティ
+        private bool _AllowUpdateCheck;
+
+        public bool AllowUpdateCheck
+        {
+            get
+            { return _AllowUpdateCheck; }
+            set
+            { 
+                if (_AllowUpdateCheck == value)
+                    return;
+                _AllowUpdateCheck = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region AllowAutoUpdate変更通知プロパティ
+        private bool _AllowAutoUpdate;
+
+        public bool AllowAutoUpdate
+        {
+            get
+            { return _AllowAutoUpdate; }
+            set
+            { 
+                if (_AllowAutoUpdate == value)
+                    return;
+                _AllowAutoUpdate = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
         #region Version変更通知プロパティ
         private string _Version;
 
@@ -233,6 +267,8 @@ namespace ToastStream.ViewModels
             ConsumerKey = Settings.ConsumerKey;
             AccessToken = Settings.AccessToken;
             ReceiveAllReplies = Settings.ReceiveAllReplies;
+            AllowUpdateCheck = Settings.AllowUpdateCheck;
+            AllowAutoUpdate = Settings.AllowAutoUpdate;
         }
 
         private void SaveSettings()
@@ -247,7 +283,9 @@ namespace ToastStream.ViewModels
                 Settings.AccessToken = AccessToken;
                 Settings.AccessTokenSecret = AccessTokenSecret;
             }
-            
+
+            Settings.AllowUpdateCheck = AllowUpdateCheck;
+            Settings.AllowAutoUpdate = AllowAutoUpdate;
             Settings.ReceiveAllReplies = ReceiveAllReplies;
         }
 
