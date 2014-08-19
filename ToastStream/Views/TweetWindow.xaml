@@ -47,7 +47,7 @@
         		<i:EventTrigger EventName="Click">
         			<l:OpenFileDialogInteractionMessageAction>
                         <l:DirectInteractionMessage CallbackCommand="{Binding OpenImageCommand}">
-        					<l:OpeningFileSelectionMessage Filter="すべてのファイル(*.*)|*.*" Title="ツイートする画像の選択"/>
+                            <l:OpeningFileSelectionMessage Filter="画像ファイル(*.jpg;*.jpeg;*.png;*.gif)|*.jpg;*.jpeg;*.png;*.gif|すべてのファイル(*.*)|*.*" Title="ツイートする画像の選択"/>
         				</l:DirectInteractionMessage>
         			</l:OpenFileDialogInteractionMessageAction>
         		</i:EventTrigger>
