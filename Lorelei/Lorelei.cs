@@ -735,9 +735,11 @@ namespace Rhinemaidens
             }
 
             ResizedImage = new Bitmap((int)(SourceImage.Width * zoom), (int)(SourceImage.Height * zoom));
-            var g = Graphics.FromImage(ResizedImage);
-            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
-            g.DrawImage(SourceImage, 0, 0, ResizedImage.Width, ResizedImage.Height);
+            using (var g = Graphics.FromImage(ResizedImage))
+            {
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
+                g.DrawImage(SourceImage, 0, 0, ResizedImage.Width, ResizedImage.Height);
+            }
         }
 
         /// <summary>

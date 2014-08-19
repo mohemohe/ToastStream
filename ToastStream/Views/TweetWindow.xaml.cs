@@ -27,24 +27,9 @@ namespace ToastStream.Views
     /// </summary>
     public partial class TweetWindow : Window
     {
-        bool ExitState { get; set; }
-
         public TweetWindow()
         {
             InitializeComponent();
-            ExitState = false;
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            this.Hide();
-            e.Cancel = !ExitState;
-        }
-
-        public void Exit()
-        {
-            ExitState = true;
-            this.Close();
         }
     }
 }

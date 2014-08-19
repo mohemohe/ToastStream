@@ -88,6 +88,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ViewModels\TweetWindowViewModel.cs" />
+    <Compile Include="Views\DummyWindow.xaml.cs">
+      <DependentUpon>DummyWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TweetWindow.xaml.cs">
       <DependentUpon>TweetWindow.xaml</DependentUpon>
     </Compile>
@@ -111,6 +114,10 @@
       <DependentUpon>ConfigWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\DummyWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\TweetWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

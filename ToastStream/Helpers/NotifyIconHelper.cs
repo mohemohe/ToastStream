@@ -19,8 +19,7 @@ namespace ToastStream.Helpers
     {
         private static NotifyIcon notifyIcon;
         private static Model m;
-        private static TweetWindow tw;
-        private static ConfigWindow cw;
+        private static DummyWindow dw;
 
         public static async void Initialize()
         {
@@ -40,16 +39,11 @@ namespace ToastStream.Helpers
 
             tsmi1.Click += (sender, e) => TweetWindowOpen();
             tsmi2.Click += (sender, e) => ConfigWindowOpen(true);
-            tsmi3.Click += (sender, e) => TweetWindowExit();
+            tsmi3.Click += (sender, e) => DummyWindowExit();
 
             notifyIcon.ContextMenuStrip = cms;
 
-            tw = new TweetWindow();
-            tw.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
-
-            var desktop = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea;
-            tw.Top = desktop.Height - tw.Height;
-            tw.Left = desktop.Width - tw.Width;
+            dw = new DummyWindow(); // ループの確保
 
             if (Settings.AccessToken == null)
             {
@@ -63,7 +57,7 @@ namespace ToastStream.Helpers
             }
             else
             {
-                TweetWindowExit();
+                DummyWindowExit();
             }
         }
 
@@ -74,43 +68,36 @@ namespace ToastStream.Helpers
 
         private static void TweetWindowOpen()
         {
-            tw.Show();
-            tw.Activate();
+            var tw = new TweetWindow();
+            tw.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+
+            var desktop = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea;
+            tw.Top = desktop.Height - tw.Height;
+            tw.Left = desktop.Width - tw.Width;
+
+            tw.ShowDialog();
+
+            tw = null;
         }
 
-        public static void TweetWindowClose()
-        {
-            tw.Hide();
-        }
-
-        public static void TweetWindowExit()
+        public static void DummyWindowExit()
         {
             Settings.WriteSettings();
-            Dispose();
-            tw.Exit();
+
+            dw.Exit();
         }
 
         public static void ConfigWindowOpen(bool SaveSettings)
         {
-            if (cw == null)
-            {
-                cw = new ConfigWindow();
-                cw.ShowDialog();
+            var cw = new ConfigWindow();
+            cw.ShowDialog();
 
-                cw = null;
-                if (SaveSettings == true)
-                {
-                    Settings.WriteSettings();
-                }
-            }
-            else
+            if (SaveSettings == true)
             {
-                try
-                {
-                    cw.Activate();
-                }
-                catch { }
+                Settings.WriteSettings();
             }
+
+            cw = null;
         }
 
         #region public static void ShowNotifyBaloon()

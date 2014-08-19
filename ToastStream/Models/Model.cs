@@ -73,6 +73,11 @@ namespace ToastStream.Models
 
                         Toast.ToastToastImageAndText02("@" + ti.screenName + " / " + ti.name, ti.body, tmpImg);
                     }
+
+                    img1 = null;
+                    img2 = null;
+                    outImg = null;
+                    ti = null;
                 }
                 catch (DeadOrDisconnectedUserStreamException)
                 {

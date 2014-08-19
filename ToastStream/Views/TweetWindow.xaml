@@ -6,7 +6,7 @@
         xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
         xmlns:v="clr-namespace:ToastStream.Views"
         xmlns:vm="clr-namespace:ToastStream.ViewModels"
-        Title="ツイート" Height="185" Width="555" Closing="Window_Closing" Icon="Resource/icon256.png" ResizeMode="NoResize">
+        Title="ツイート" Height="185" Width="555" Icon="Resource/icon256.png" ResizeMode="NoResize">
 
     <Window.DataContext>
         <vm:TweetWindowViewModel/>

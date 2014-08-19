@@ -252,6 +252,5 @@ namespace ToastStream.ViewModels
             catch { throw; }
         }
         #endregion
-
     }
 }
