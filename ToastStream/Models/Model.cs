@@ -6,6 +6,7 @@ using System.Text;
 using Livet;
 using Rhinemaidens;
 using Win8Toast;
+using System.Drawing;
 
 namespace ToastStream.Models
 {
@@ -38,6 +39,8 @@ namespace ToastStream.Models
         private void ToastStream()
         {
             Lorelei.TweetInfo ti;
+            Bitmap img1, img2, outImg;
+            var tmpImg = "~tmpIcon";
 
             try
             {
@@ -47,14 +50,21 @@ namespace ToastStream.Models
             {
                 lorelei.ConnectUserStream(Settings.ReceiveAllReplies);
             }
+
+            var ico = new System.Drawing.Icon(System.Environment.CurrentDirectory + "\\ToastStream.ico", 256, 256);
+            img1 = ico.ToBitmap();
+            ico.Dispose();
+            lorelei.ResizeImage(150, 150, img1, out outImg);
+            outImg.Save(tmpImg);
+            Toast.ToastToastImageAndText02("ToastStream", "UserStreamに接続しました", tmpImg);
+
             while (true)
             {
                 try
                 {
                     ti = lorelei.tweetInfoQueue.Dequeue();
 
-                    System.Drawing.Bitmap img1, img2, outImg;
-                    var tmpImg = "~tmpIcon";
+                    
 
                     if (ti.IsRetweet == true)
                     {
