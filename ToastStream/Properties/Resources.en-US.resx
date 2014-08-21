@@ -118,107 +118,108 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AboutToastStream" xml:space="preserve">
-    <value>ToastStream について</value>
+    <value>About ToastStream</value>
     <comment>ConfigWindow</comment>
   </data>
   <data name="Account" xml:space="preserve">
-    <value>アカウント</value>
+    <value>Account</value>
     <comment>ConfigWindow</comment>
   </data>
   <data name="APIkey_OnlyIfNecessary" xml:space="preserve">
-    <value>API key（通常は入力不要です）</value>
+    <value>API key（only if necessary）</value>
     <comment>ConfigWindow</comment>
   </data>
   <data name="APIsecret_OnlyIfNecessary" xml:space="preserve">
-    <value>API secret（通常は入力不要です）</value>
+    <value>API secret（only if necessary）</value>
     <comment>ConfigWindow</comment>
   </data>
-  <data name="OpenFileDialog_Filter" xml:space="preserve">
-    <value>画像ファイル(*.jpg;*.jpeg;*.png;*.gif)|*.jpg;*.jpeg;*.png;*.gif|すべてのファイル(*.*)|*.*</value>
-    <comment>TweetWindow</comment>
-  </data>
-  <data name="OpenTheAuthentificationURL" xml:space="preserve">
-    <value>① 認証ページをブラウザで開く</value>
-    <comment>ConfigWindow</comment>
-  </data>
-  <data name="OverridesAPIkeys" xml:space="preserve">
-    <value>APIキーのオーバーライド</value>
-    <comment>ConfigWindow</comment>
-  </data>
-  <data name="SelectImage" xml:space="preserve">
-    <value>ツイートする画像の選択</value>
-    <comment>TweetWindow</comment>
-  </data>
-  <data name="Timeline" xml:space="preserve">
-    <value>タイムライン</value>
-    <comment>ConfigWindow</comment>
-  </data>
-  <data name="Tweet" xml:space="preserve">
-    <value>ツイート</value>
-    <comment>Global</comment>
-  </data>
-  <data name="Update" xml:space="preserve">
-    <value>アップデート</value>
-    <comment>ConfigWindow</comment>
-  </data>
-  <data name="AuthProgress" xml:space="preserve">
-    <value>認証状況 : </value>
-    <comment>ConfigWindow</comment>
-  </data>
-  <data name="PINtoCompleteAuthentification" xml:space="preserve">
-    <value>② PINを入力して認証を完了する</value>
+  <data name="AppliedAfterRestart" xml:space="preserve">
+    <value>※ Some options applied after restart</value>
     <comment>ConfigWindow</comment>
   </data>
   <data name="Apply" xml:space="preserve">
-    <value>適用</value>
+    <value>Appry</value>
     <comment>Global</comment>
+  </data>
+  <data name="AuthProgress" xml:space="preserve">
+    <value>Auth progress : </value>
+    <comment>ConfigWindow</comment>
   </data>
   <data name="Cancel" xml:space="preserve">
-    <value>キャンセル</value>
+    <value>Cancel</value>
     <comment>Global</comment>
   </data>
-  <data name="AppliedAfterRestart" xml:space="preserve">
-    <value>※ 一部の設定は再起動後に有効になります</value>
+  <data name="OpenFileDialog_Filter" xml:space="preserve">
+    <value>Image file(*.jpg;*.jpeg;*.png;*.gif)|*.jpg;*.jpeg;*.png;*.gif|All file(*.*)|*.*</value>
+    <comment>TweetWindow</comment>
+  </data>
+  <data name="OpenTheAuthentificationURL" xml:space="preserve">
+    <value>① Open the authentification page</value>
+    <comment>ConfigWindow</comment>
+  </data>
+  <data name="OverridesAPIkeys" xml:space="preserve">
+    <value>Overrides API key</value>
+    <comment>ConfigWindow</comment>
+  </data>
+  <data name="PINtoCompleteAuthentification" xml:space="preserve">
+    <value>② Input PIN code, and complete authentification</value>
     <comment>ConfigWindow</comment>
   </data>
   <data name="ReceiveAllReplies" xml:space="preserve">
-    <value>他人へのリプライを全て受信する（トーストを占有する可能性が高くなります）</value>
+    <value>Receive all replies including non-follow users</value>
+    <comment>ConfigWindow</comment>
+  </data>
+  <data name="SelectImage" xml:space="preserve">
+    <value>Select image</value>
+    <comment>TweetWindow</comment>
+  </data>
+  <data name="Timeline" xml:space="preserve">
+    <value>Timeline</value>
+    <comment>ConfigWindow</comment>
+  </data>
+  <data name="Tweet" xml:space="preserve">
+    <value>Tweet</value>
+    <comment>Global</comment>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
     <comment>ConfigWindow</comment>
   </data>
   <data name="AllowAccessToToastStream" xml:space="preserve">
-    <value>ToastStreamのアクセスを許可して、PINを入力してください。</value>
+    <value>Plese allow access to ToastStream and input PIN code.</value>
     <comment>ConfigWindow</comment>
   </data>
   <data name="AllowAutoUpdate" xml:space="preserve">
-    <value>自動的にアップデートする</value>
+    <value>and automatic update</value>
     <comment>ConfigWindow</comment>
   </data>
   <data name="AllowUpdateCheck" xml:space="preserve">
-    <value>起動時にToastStreamのアップデートを確認する</value>
+    <value>Check updates of ToastStream in startup</value>
     <comment>ConfigWindow</comment>
   </data>
   <data name="Authenticated" xml:space="preserve">
-    <value>認証済みです</value>
+    <value>Authenticated</value>
     <comment>ConfigWindow</comment>
   </data>
   <data name="CantGetAccessToken" xml:space="preserve">
-    <value>トークンを取得できませんでした。しばらく待ってから再度認証してみてください。</value>
+    <value>Can not get the access token. Please try again.</value>
     <comment>ConfigWindow</comment>
   </data>
   <data name="CantGetAuthentificationURL" xml:space="preserve">
-    <value>認証URLを取得できませんでした。しばらく待ってから再度認証してみてください。</value>
+    <value>Can not get the authentification URL. Please try again.</value>
     <comment>ConfigWindow</comment>
   </data>
   <data name="Config" xml:space="preserve">
-    <value>設定</value>
+    <value>Settings</value>
     <comment>Global</comment>
   </data>
   <data name="Exit" xml:space="preserve">
-    <value>終了</value>
+    <value>Exit</value>
     <comment>Global</comment>
   </data>
   <data name="NotYetAuthenticated" xml:space="preserve">
-    <value>認証されていません。 ①のボタンをクリックして認証してください。</value>
+    <value>You are not yet authenticated.
+Click "①" button to start authentification.</value>
     <comment>ConfigWindow</comment>
   </data>
 </root>

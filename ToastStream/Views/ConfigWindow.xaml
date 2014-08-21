@@ -1,12 +1,13 @@
 ﻿<Window x:Class="ToastStream.Views.ConfigWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:properties="clr-namespace:ToastStream.Properties"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
         xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
         xmlns:v="clr-namespace:ToastStream.Views"
         xmlns:vm="clr-namespace:ToastStream.ViewModels"
-        Title="設定" Height="386" Width="750" Icon="Resource/icon256.png">
+        Title="{x:Static properties:Resources.Config}" Height="386" Width="750" Icon="Resource/icon256.png">
 
     <Window.DataContext>
         <vm:ConfigWindowViewModel />
@@ -31,49 +32,61 @@
         <l:InteractionMessageTrigger MessageKey="Close" Messenger="{Binding Messenger}" InvokeActionsOnlyWhileAttatchedObjectLoaded="True">
             <l:WindowInteractionMessageAction />
         </l:InteractionMessageTrigger>
-        
+
         <!--WindowのCloseキャンセル処理に対応する場合は、WindowCloseCancelBehaviorの使用を検討してください-->
 
     </i:Interaction.Triggers>
 
     <Grid>
         <ListBox HorizontalAlignment="Left" Margin="10,10,0,45" Width="200" SelectedIndex="{Binding SelectedIndex}">
-            <ListBoxItem Content="アカウント" IsSelected="True"/>
-            <ListBoxItem Content="タイムライン"/>
-            <ListBoxItem Content="アップデート"/>
-            <ListBoxItem Content="ToastStream について"/>
+            <ListBoxItem Content="{x:Static properties:Resources.Account}" IsSelected="True"/>
+            <ListBoxItem Content="{x:Static properties:Resources.Timeline}"/>
+            <ListBoxItem Content="{x:Static properties:Resources.Update}"/>
+            <ListBoxItem Content="Language"/>
+            <ListBoxItem Content="{x:Static properties:Resources.AboutToastStream}"/>
         </ListBox>
         <TabControl Name="TabControl" Margin="224,10,10,24" TabStripPlacement="Bottom" SelectedIndex="{Binding SelectedIndex}">
             <TabItem Header="アカウント" Height="0" IsSelected="True">
                 <ScrollViewer>
                     <Grid>
-                        <Label Content="APIキーのオーバーライド" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                        <Label Content="API key （通常は入力不要です）" Margin="10,38,10,0" VerticalAlignment="Top"/>
+                        <Label Content="{x:Static properties:Resources.OverridesAPIkeys}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                        <Label Content="{x:Static properties:Resources.APIkey_OnlyIfNecessary}" Margin="10,38,10,0" VerticalAlignment="Top"/>
                         <TextBox Name="APIkeyTextBox" Height="23" Margin="10,40,10,0" TextWrapping="Wrap" Text="{Binding ConsumerKey}" VerticalAlignment="Top" TextChanged="APIkeyTextBox_TextChanged"/>
-                        <Label Content="API secret （通常は入力不要です）" Margin="10,66,10,0" VerticalAlignment="Top"/>
+                        <Label Content="{x:Static properties:Resources.APIsecret_OnlyIfNecessary}" Margin="10,66,10,0" VerticalAlignment="Top"/>
                         <TextBox Name="APIsecretTextBox" Height="23" Margin="10,68,10,0" TextWrapping="Wrap" Text="{Binding ConsumerSecret}" VerticalAlignment="Top" TextChanged="APIsecretTextBox_TextChanged"/>
-                        <Button Content="① 認証ページをブラウザで開く" Command="{Binding OpenAuthUrlCommand, Mode=OneWay}" Margin="10,96,10,0" VerticalAlignment="Top" Height="40"/>
+                        <Button Content="{x:Static properties:Resources.OpenTheAuthentificationURL}" Command="{Binding OpenAuthUrlCommand, Mode=OneWay}" Margin="10,96,10,0" VerticalAlignment="Top" Height="40"/>
                         <Label Content="PIN" HorizontalAlignment="Left" Margin="10,145,0,0" VerticalAlignment="Top"/>
                         <TextBox Height="23" Margin="10,175,10,0" TextWrapping="Wrap" Text="{Binding PIN}" VerticalAlignment="Top"/>
-                        <Button Content="② PINを入力して認証を完了する" Command="{Binding GetAccessTokenCommand, Mode=OneWay}" Margin="10,203,10,0" VerticalAlignment="Top" Height="40"/>
-                        <Label Content="認証状況 : " HorizontalAlignment="Left" Margin="10,255,0,0" VerticalAlignment="Top" Padding="5,5,0,5"/>
-                        <Label Content="{Binding AuthProgress}" Margin="76,255,10,0" VerticalAlignment="Top" Padding="0,5,5,5"/>
+                        <Button Content="{x:Static properties:Resources.PINtoCompleteAuthentification}" Command="{Binding GetAccessTokenCommand, Mode=OneWay}" Margin="10,203,10,0" VerticalAlignment="Top" Height="40"/>
+                        <WrapPanel Margin="10,255,10,0" VerticalAlignment="Top">
+                            <Label Content="{x:Static properties:Resources.AuthProgress}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="5,5,0,5"/>
+                            <Label Content="{Binding AuthProgress}" VerticalAlignment="Top" Padding="0,5,5,5"/>
+                        </WrapPanel>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="タイムライン" Height="0">
                 <ScrollViewer>
                     <Grid>
-                        <CheckBox Content="他人へのリプライを全て受信する（トーストを占有する可能性が高くなります）" IsChecked="{Binding ReceiveAllReplies}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                        <Label Content="※ 一部の設定は再起動後に有効になります。" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Foreground="#FF424242"/>
+                        <CheckBox Content="{x:Static properties:Resources.ReceiveAllReplies}" IsChecked="{Binding ReceiveAllReplies}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                        <Label Content="{x:Static properties:Resources.AppliedAfterRestart}" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Foreground="#FF424242"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="アップデート" Height="0">
                 <ScrollViewer>
                     <Grid>
-                        <CheckBox Content="起動時にToastStreamのアップデートを確認する" IsChecked="{Binding AllowUpdateCheck}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-                        <CheckBox Content="自動的にアップデートする" IsChecked="{Binding AllowAutoUpdate}" IsEnabled="{Binding AllowUpdateCheck}" HorizontalAlignment="Left" Margin="32,30,0,0" VerticalAlignment="Top"/>
+                        <CheckBox Content="{x:Static properties:Resources.AllowUpdateCheck}" IsChecked="{Binding AllowUpdateCheck}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                        <CheckBox Content="{x:Static properties:Resources.AllowAutoUpdate}" IsChecked="{Binding AllowAutoUpdate}" IsEnabled="{Binding AllowUpdateCheck}" HorizontalAlignment="Left" Margin="32,30,0,0" VerticalAlignment="Top"/>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Language" Height="0">
+                <ScrollViewer>
+                    <Grid>
+                        <Label Content="Language :" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                        <ComboBox x:Name="LanguageComboBox" Margin="91,14,10,0" VerticalAlignment="Top" ItemsSource="{Binding Language}" DisplayMemberPath="Language" SelectedValuePath="Locale" SelectedValue="{Binding Locale}" SelectedIndex="0" />
+                        <Label Content="※ Some options applied after restart." HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Foreground="#FF424242"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
@@ -121,7 +134,7 @@
         </TabControl>
         <Rectangle Fill="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Height="45" VerticalAlignment="Bottom"/>
         <Button Content="OK" Command="{Binding OKCommand, Mode=OneWay}" Margin="0,0,190,10" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75"/>
-        <Button Content="キャンセル" Command="{Binding CancelCommand, Mode=OneWay}" Margin="0,0,100,10" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75"/>
-        <Button Content="適用" Command="{Binding ApplyCommand, Mode=OneWay}" Margin="0,0,10,10" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75"/>
+        <Button Content="{x:Static properties:Resources.Cancel}" Command="{Binding CancelCommand, Mode=OneWay}" Margin="0,0,100,10" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75"/>
+        <Button Content="{x:Static properties:Resources.Apply}" Command="{Binding ApplyCommand, Mode=OneWay}" Margin="0,0,10,10" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75"/>
     </Grid>
 </Window>

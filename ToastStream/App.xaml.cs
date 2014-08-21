@@ -9,6 +9,8 @@ using Livet;
 using System.Threading;
 using ToastStream.Helpers;
 using System.IO;
+using System.Globalization;
+using ToastStream.Models;
 
 namespace ToastStream
 {
@@ -32,7 +34,24 @@ namespace ToastStream
             DispatcherHelper.UIDispatcher = Dispatcher;
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
+            Settings.Initialize();
+
+            if (String.IsNullOrEmpty(Settings.Language) == false)
+            {
+                SetCurrentCulture(Settings.Language);
+            }
+            else
+            {
+                SetCurrentCulture("");
+            }
+            
             NotifyIconHelper.Initialize();
+        }
+
+        private void SetCurrentCulture(string CultureName)
+        { 
+            Thread.CurrentThread.CurrentCulture = new CultureInfo(CultureName);
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(CultureName); 
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)

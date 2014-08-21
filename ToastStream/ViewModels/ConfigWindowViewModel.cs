@@ -17,6 +17,7 @@ using ToastStream.Helpers;
 using Rhinemaidens;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 
 namespace ToastStream.ViewModels
@@ -219,6 +220,40 @@ namespace ToastStream.ViewModels
         }
         #endregion
 
+        #region Language変更通知プロパティ
+        private ObservableCollection<LanguageViewModel> _Language;
+
+        public ObservableCollection<LanguageViewModel> Language
+        {
+            get
+            { return _Language; }
+            set
+            {
+                if (_Language == value)
+                    return;
+                _Language = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
+        #region Locale変更通知プロパティ
+        private string _Locale;
+
+        public string Locale
+        {
+            get
+            { return _Locale; }
+            set
+            { 
+                if (_Locale == value)
+                    return;
+                _Locale = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
+
         #region Version変更通知プロパティ
         private string _Version;
 
@@ -245,20 +280,26 @@ namespace ToastStream.ViewModels
 
         public void Initialize()
         {
-            Version = "Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
-
             lorelei = new Lorelei();
+
+            Version = "Version " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            this.Language = new ObservableCollection<LanguageViewModel>() {
+                new LanguageViewModel() { Language = "日本語 (ja-JP)", Locale = null },
+                new LanguageViewModel() { Language = "English (en-US)", Locale = "en-US" },
+                new LanguageViewModel() { Language = "こふ語 (kv-JP)", Locale = "ja" },
+            };
+            
             ReadSettings();
 
             if (AccessToken != null)
             {
                 IsAuthed = true;
-                AuthProgress = "認証済みです。";
+                AuthProgress = Properties.Resources.Authenticated;
             }
             else
             {
                 IsAuthed = false;
-                AuthProgress = "認証されていません。 ①のボタンをクリックして認証してください。";
+                AuthProgress = Properties.Resources.NotYetAuthenticated;
             }
         }
 
@@ -269,6 +310,7 @@ namespace ToastStream.ViewModels
             ReceiveAllReplies = Settings.ReceiveAllReplies;
             AllowUpdateCheck = Settings.AllowUpdateCheck;
             AllowAutoUpdate = Settings.AllowAutoUpdate;
+            Locale = Settings.Language;
         }
 
         private void SaveSettings()
@@ -287,6 +329,7 @@ namespace ToastStream.ViewModels
             Settings.AllowUpdateCheck = AllowUpdateCheck;
             Settings.AllowAutoUpdate = AllowAutoUpdate;
             Settings.ReceiveAllReplies = ReceiveAllReplies;
+            Settings.Language = Locale;
         }
 
         #region OpenAuthUrlCommand
@@ -324,11 +367,11 @@ namespace ToastStream.ViewModels
             if (url != null)
             {
                 Process.Start(url);
-                AuthProgress = "ToastStreamのアクセスを許可して、PINを入力してください。";
+                AuthProgress = Properties.Resources.AllowAccessToToastStream;
             }
             else
             {
-                AuthProgress = "認証URLを取得できませんでした。しばらく待ってから再度認証してみてください。";
+                AuthProgress = Properties.Resources.CantGetAuthentificationURL;
             }
 
         }
@@ -373,11 +416,11 @@ namespace ToastStream.ViewModels
                 AccessTokenSecret = tokenSecret;
 
                 IsAuthed = true;
-                AuthProgress = "認証されています。";
+                AuthProgress = Properties.Resources.Authenticated;
             }
             else
             {
-                AuthProgress = "トークンを取得できませんでした。しばらく待ってから再度認証してみてください。";
+                AuthProgress = Properties.Resources.CantGetAccessToken;
             }
         }
         #endregion

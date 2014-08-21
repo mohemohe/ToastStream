@@ -1,12 +1,13 @@
 ﻿<Window x:Class="ToastStream.Views.TweetWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:properties="clr-namespace:ToastStream.Properties"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
         xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
         xmlns:v="clr-namespace:ToastStream.Views"
         xmlns:vm="clr-namespace:ToastStream.ViewModels"
-        Title="ツイート" Height="185" Width="555" Icon="Resource/icon256.png" ResizeMode="NoResize">
+        Title="{x:Static properties:Resources.Tweet}" Height="185" Width="555" Icon="Resource/icon256.png" ResizeMode="NoResize">
 
     <Window.DataContext>
         <vm:TweetWindowViewModel/>
@@ -40,14 +41,14 @@
         <Image Margin="437,10,10,44" Source="{Binding TweetImagePreview}" RenderOptions.BitmapScalingMode="HighQuality" />
         <TextBox Text="{Binding TweetBody, UpdateSourceTrigger=PropertyChanged}" Margin="10,10,10,44" AcceptsReturn="True" TextWrapping="Wrap" FontFamily="Meiryo" Background="#CCFFFFFF" />
         <Label Content="{Binding TweetLength}" HorizontalAlignment="Right" Margin="0,0,90,10" Height="25" VerticalAlignment="Bottom"/>
-        <Button Content="ツイート" Command="{Binding PostTweetCommand}"  Margin="0,0,10,13" HorizontalAlignment="Right" Width="75" Height="19" VerticalAlignment="Bottom"/>
+        <Button Content="{x:Static properties:Resources.Tweet}" Command="{Binding PostTweetCommand}"  Margin="0,0,10,13" HorizontalAlignment="Right" Width="75" Height="19" VerticalAlignment="Bottom"/>
 
         <Button HorizontalAlignment="Left" Margin="10,0,0,13" Width="31" Height="19" VerticalAlignment="Bottom" Background="{x:Null}">
         	<i:Interaction.Triggers>
         		<i:EventTrigger EventName="Click">
         			<l:OpenFileDialogInteractionMessageAction>
                         <l:DirectInteractionMessage CallbackCommand="{Binding OpenImageCommand}">
-                            <l:OpeningFileSelectionMessage Filter="画像ファイル(*.jpg;*.jpeg;*.png;*.gif)|*.jpg;*.jpeg;*.png;*.gif|すべてのファイル(*.*)|*.*" Title="ツイートする画像の選択"/>
+                            <l:OpeningFileSelectionMessage Filter="{x:Static properties:Resources.OpenFileDialog_Filter}" Title="{x:Static properties:Resources.SelectImage}"/>
         				</l:DirectInteractionMessage>
         			</l:OpenFileDialogInteractionMessageAction>
         		</i:EventTrigger>

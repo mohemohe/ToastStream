@@ -78,11 +78,18 @@ namespace SoftwareUpdater.Models
         {
             await Task.Run(() => 
             {
-                var files = Directory.GetFiles(sourceDir);
+                var files = Directory.GetFiles(sourceDir,"*",SearchOption.AllDirectories);
                 foreach(var f in files)
                 {
                     if (Path.GetFileName(f) != "tmp.zip")
                     {
+                        var test = Path.GetDirectoryName(Path.Combine(targetDir, f.Replace(sourceDir, "")));
+
+                        if (Directory.Exists(Path.GetDirectoryName(Path.Combine(targetDir, f.Replace(sourceDir, "")))) == false)
+                        {
+                            Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(targetDir, f.Replace(sourceDir, ""))));
+                        } 
+
                         try
                         {
                             if (File.Exists(Path.Combine(targetDir, Path.GetFileName(f)) + ".old"))
@@ -98,8 +105,8 @@ namespace SoftwareUpdater.Models
                                 File.Move(Path.Combine(targetDir, Path.GetFileName(f)), Path.Combine(targetDir, Path.GetFileName(f)) + ".old");
                             }
                             
-                            using (var fs1 = new FileStream(Path.Combine(sourceDir, Path.GetFileName(f)), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                            using (var fs2 = new FileStream(Path.Combine(targetDir, Path.GetFileName(f)), FileMode.Create, FileAccess.Write, FileShare.Read))
+                            using (var fs1 = new FileStream(f, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                            using (var fs2 = new FileStream(Path.Combine(targetDir, f.Replace(sourceDir, "")), FileMode.Create, FileAccess.Write, FileShare.Read))
                             {
                                 fs1.CopyTo(fs2);
                                 fs2.Close();

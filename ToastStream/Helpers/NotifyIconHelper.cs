@@ -20,11 +20,11 @@ namespace ToastStream.Helpers
         private static NotifyIcon notifyIcon;
         private static Model m;
         private static DummyWindow dw;
+        private static TweetWindow tw;
+        private static ConfigWindow cw;
 
         public static async void Initialize()
         {
-            Settings.Initialize();
-
             var uch = new UpdateCheckHelper();
             uch.UpdateCheck();
 
@@ -35,9 +35,9 @@ namespace ToastStream.Helpers
             notifyIcon.DoubleClick += (sender, e) => TweetWindowOpen();
 
             var cms = new ContextMenuStrip();
-            var tsmi1 = new ToolStripMenuItem("Tweet");
-            var tsmi2 = new ToolStripMenuItem("Config");
-            var tsmi3 = new ToolStripMenuItem("Exit");
+            var tsmi1 = new ToolStripMenuItem(Properties.Resources.Tweet);
+            var tsmi2 = new ToolStripMenuItem(Properties.Resources.Config);
+            var tsmi3 = new ToolStripMenuItem(Properties.Resources.Exit);
             cms.Items.AddRange(new ToolStripMenuItem[] { tsmi1, tsmi2, tsmi3 });
 
             tsmi1.Click += (sender, e) => TweetWindowOpen();
@@ -71,7 +71,7 @@ namespace ToastStream.Helpers
 
         private static void TweetWindowOpen()
         {
-            var tw = new TweetWindow();
+            tw = new TweetWindow();
             tw.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
 
             var desktop = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea;
@@ -92,15 +92,22 @@ namespace ToastStream.Helpers
 
         public static void ConfigWindowOpen(bool SaveSettings)
         {
-            var cw = new ConfigWindow();
-            cw.ShowDialog();
-
-            if (SaveSettings == true)
+            if (cw == null)
             {
-                Settings.WriteSettings();
-            }
+                cw = new ConfigWindow();
+                cw.ShowDialog();
 
-            cw = null;
+                if (SaveSettings == true)
+                {
+                    Settings.WriteSettings();
+                }
+
+                cw = null;
+            }
+            else
+            {
+                cw.Activate();
+            }
         }
 
         #region public static void ShowNotifyBaloon()
