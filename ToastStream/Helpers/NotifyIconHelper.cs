@@ -20,6 +20,8 @@ namespace ToastStream.Helpers
         private static NotifyIcon notifyIcon;
         private static Model m;
         private static DummyWindow dw;
+        private static TweetWindow tw;
+        private static ConfigWindow cw;
 
         public static async void Initialize()
         {
@@ -69,7 +71,7 @@ namespace ToastStream.Helpers
 
         private static void TweetWindowOpen()
         {
-            var tw = new TweetWindow();
+            tw = new TweetWindow();
             tw.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
 
             var desktop = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea;
@@ -90,15 +92,22 @@ namespace ToastStream.Helpers
 
         public static void ConfigWindowOpen(bool SaveSettings)
         {
-            var cw = new ConfigWindow();
-            cw.ShowDialog();
-
-            if (SaveSettings == true)
+            if (cw == null)
             {
-                Settings.WriteSettings();
-            }
+                cw = new ConfigWindow();
+                cw.ShowDialog();
 
-            cw = null;
+                if (SaveSettings == true)
+                {
+                    Settings.WriteSettings();
+                }
+
+                cw = null;
+            }
+            else
+            {
+                cw.Activate();
+            }
         }
 
         #region public static void ShowNotifyBaloon()
