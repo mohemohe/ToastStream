@@ -103,6 +103,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helpers\UpdateCheckHelper.cs" />
+    <Compile Include="ViewModels\LanguageViewModel.cs" />
     <Compile Include="ViewModels\TweetWindowViewModel.cs" />
     <Compile Include="Views\DummyWindow.xaml.cs">
       <DependentUpon>DummyWindow.xaml</DependentUpon>
@@ -154,7 +155,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />
@@ -172,6 +173,8 @@
     <Content Include="InfrastructureAssemblies\System.Windows.Interactivity.dll" />
     <Resource Include="Views\Resource\appbar.image.png" />
     <Resource Include="Views\Resource\icon256.png" />
+    <EmbeddedResource Include="Properties\Resources.en-US.resx" />
+    <EmbeddedResource Include="Properties\Resources.ja.resx" />
     <EmbeddedResource Include="Views\Resource\ToastStream.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>

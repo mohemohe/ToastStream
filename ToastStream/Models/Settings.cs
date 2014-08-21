@@ -20,6 +20,8 @@ namespace ToastStream.Models
 
         public bool AllowUpdateCheck = true;
         public bool AllowAutoUpdate = true;
+
+        public string Language;
     }
 
     /// <summary>
@@ -44,6 +46,8 @@ namespace ToastStream.Models
 
             public static bool? _AllowUpdateCheck { get; set; }
             public static bool? _AllowAutoUpdate { get; set; }
+
+            public static string _Language { get; set; }
         }
         #endregion
 
@@ -146,6 +150,12 @@ namespace ToastStream.Models
             set { _Settings._AllowAutoUpdate = value; }
         }
 
+        public static string Language
+        {
+            get { return _Settings._Language; }
+            set { _Settings._Language = value; }
+        }
+
         #endregion Accessor
 
         private static string FileName = "Settings.xml";
@@ -208,6 +218,7 @@ namespace ToastStream.Models
             _Settings._ReceiveAllReplies = xmls.ReceiveAllReplies;
             _Settings._AllowUpdateCheck = xmls.AllowUpdateCheck;
             _Settings._AllowAutoUpdate = xmls.AllowAutoUpdate;
+            _Settings._Language = xmls.Language;
         }
 
         /// <summary>
@@ -224,6 +235,7 @@ namespace ToastStream.Models
             xmls.ReceiveAllReplies = Settings.ReceiveAllReplies;
             xmls.AllowUpdateCheck = Settings.AllowUpdateCheck;
             xmls.AllowAutoUpdate = Settings.AllowAutoUpdate;
+            xmls.Language = Settings.Language;
 
             var xs = new XmlSerializer(typeof(XMLSettings));
             using (var fs = new FileStream(FileName, FileMode.Create, FileAccess.Write))

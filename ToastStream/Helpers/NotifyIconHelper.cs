@@ -23,8 +23,6 @@ namespace ToastStream.Helpers
 
         public static async void Initialize()
         {
-            Settings.Initialize();
-
             var uch = new UpdateCheckHelper();
             uch.UpdateCheck();
 
@@ -35,9 +33,9 @@ namespace ToastStream.Helpers
             notifyIcon.DoubleClick += (sender, e) => TweetWindowOpen();
 
             var cms = new ContextMenuStrip();
-            var tsmi1 = new ToolStripMenuItem("Tweet");
-            var tsmi2 = new ToolStripMenuItem("Config");
-            var tsmi3 = new ToolStripMenuItem("Exit");
+            var tsmi1 = new ToolStripMenuItem(Properties.Resources.Tweet);
+            var tsmi2 = new ToolStripMenuItem(Properties.Resources.Config);
+            var tsmi3 = new ToolStripMenuItem(Properties.Resources.Exit);
             cms.Items.AddRange(new ToolStripMenuItem[] { tsmi1, tsmi2, tsmi3 });
 
             tsmi1.Click += (sender, e) => TweetWindowOpen();

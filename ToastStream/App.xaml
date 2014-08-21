@@ -1,8 +1,9 @@
 ﻿<Application x:Class="ToastStream.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:properties="clr-namespace:ToastStream.Properties"
              Startup="Application_Startup" Exit="Application_Exit">
     <Application.Resources>
-         
+        <properties:Resources x:Key="resources" />
     </Application.Resources>
 </Application>
